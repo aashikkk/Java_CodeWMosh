@@ -23,10 +23,10 @@
 
 **Method** - A function that is a part of the class
 
-![img.png](img.png)
+![img.png](imgs/img.png)
 
 ### How Java Code executed
-![img_1.png](img_1.png)
+![img_1.png](imgs/img_1.png)
 
 Java code execution involves several steps:
 
@@ -52,7 +52,7 @@ JDK = JRE + Development Tools
 JRE = JVM + Libraries
 ```
 
-![img_2.png](img_2.png)
+![img_2.png](imgs/img_2.png)
 
 Java is platform-independent because of the Java Virtual Machine (JVM). Here is a brief explanation:
 
@@ -71,7 +71,7 @@ java Main
 
 ![img_3.png](img_3.png
 
-![img_4.png](img_4.png)
+![img_4.png](imgs/img_4.png)
 
 ## Types
 1. Variables and constants
@@ -93,7 +93,7 @@ public class Main {
 ```
 
 ###  Primitive Types
-![img_5.png](img_5.png)
+![img_5.png](imgs/img_5.png)
 Java has several primitive types, which are the most basic data types in the language. These types represent simple values like numbers, characters, and booleans. Here are the eight primitive types in Java:
 1. **byte**: 8-bit integer
 2. **short**: 16-bit integer
@@ -105,7 +105,7 @@ Java has several primitive types, which are the most basic data types in the lan
 8. **boolean**: true or false
 
 
-![img_6.png](img_6.png)
+![img_6.png](imgs/img_6.png)
 
 ```java
 public class Main {
@@ -120,7 +120,7 @@ public class Main {
 ```
 
 ### Reference Types
-![img_7.png](img_7.png)
+![img_7.png](imgs/img_7.png)
 
 - When declare primitive types, we don't need to allocate memory. Memory is allocated automatically by Java (JRE).
 - When dealing with reference types, we should always allocate memory. Now we don't have to release this memory, Java JRE will take care of it.
@@ -163,7 +163,7 @@ public class Example {
 In Java, you always define functions as methods within a class.
 
 ### Primitive vs Reference Types
-![img_8.png](img_8.png)
+![img_8.png](imgs/img_8.png)
 
 ```java
 public static void main(String[] args) {
@@ -186,8 +186,8 @@ public static void main(String[] args) {
 }
 ```
 
-![img_9.png](img_9.png)
-![img_10.png](img_10.png)
+![img_9.png](imgs/img_9.png)
+![img_10.png](imgs/img_10.png)
 
 - Reference type copied by their reference, not by their value.
 - Primitive types copied by their value. Values are completely independent of each other.
@@ -333,7 +333,7 @@ public static void main(String[] args) {
     System.out.println(x); // 26
 }
 ```
-![img_11.png](img_11.png)
+![img_11.png](imgs/img_11.png)
 
 ### Casting
 ```java
