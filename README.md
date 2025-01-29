@@ -11,9 +11,23 @@
         4. [Primitive vs Reference Types](#primitive-vs-reference-types)
         5. [Strings](#strings)
         6. [Arrays](#arrays)
-        7. [Casting](#casting)
-        8. [Numbers](#numbers)
-        9. [Read Input](#read-input)
+        7. [Constants](#constants)
+        8. [Arithmetic Expressions](#arithmetic-expressions)
+        9. [Casting](#casting)
+       10. [Math class](#math-class)
+       11. [Format Numbers](#format-numbers)
+       12. [Reading Input](#reading-input)
+   4. [Control Flow](#control-flow)
+        1. [If Statements](#if-statements)
+        2. [Teranry Operator](#ternary-operator)
+        3. [Switch Statements](#switch-statement)
+        4. [For Loops](#for-loops)
+        5. [While Loops](#while-loops)
+        6. [Do-While Loops](#do-while-loops)
+        7. [Break and Continue Statements](#break-and-continue-statements)
+        8. [For Each Loop](#for-each-loop)
+   5. [Clean Coding](#clean-coding)
+
 
 # Fundamentals
 ## Getting Started
@@ -455,3 +469,321 @@ public class Main {
     }
 }
 ```
+
+## Control Flow
+1. Comparison Operators
+2. Logical Operators
+3. Conditional Statements
+4. Loops
+
+### Comparison Operators
+
+```java
+    public static void main(String[] args) {
+        int x = 1;
+        int y = 1;
+        // This uses for primitive types
+        // boolean expression produces a boolean value
+        System.out.println(x == y); // true
+        System.out.println(x != y); // false
+        System.out.println(x > y); // false
+        System.out.println(x >= y); // true
+        System.out.println(x <= y); // false
+    }
+```
+
+### Logical Operators
+
+```java
+    public static void main(String[] args) {
+        int temperature = 22;
+        boolean isWarm = temperature > 20 && temperature < 30;
+        System.out.println(isWarm); // true
+
+        boolean hasHighIncome = true;
+        boolean hasGoodCredit = true;
+        boolean hasCriminalRecord = false;
+        boolean isEligible = (hasHighIncome || hasGoodCredit) && !hasCriminalRecord;
+        System.out.println(isEligible); // true
+    }
+```
+
+### If Statements
+
+```java
+    public static void main(String[] args) {
+        int temp = 32;
+        if (temp > 30){
+            System.out.println("It's a hot day!");
+            System.out.println("Drink plenty of water");
+        }
+        else if(temp > 20)
+            System.out.println("It's a nice day!");
+        else
+            System.out.println("It's cold!");
+
+    }
+```
+
+### Simplifying If Statements
+
+```java
+    public static void main(String[] args) {
+        int income = 120_000;
+        boolean hasHighIncome = (income > 100_000);
+    }
+    
+    
+    
+```
+
+### Ternary Operator
+
+```java
+    public static void main(String[] args) {
+        int income = 120_000;
+        String className = income > 100_000 ? "First" : "Economy";
+    }
+```
+
+### Switch Statement
+
+```java
+    public static void main(String[] args) {
+        String role = "admin";
+        switch (role){
+            case "admin":
+                System.out.println("You're admin");
+                break;
+            case "moderator":
+                System.out.println("You're moderator");
+                break;
+            default:
+                System.out.println("You're a guest");
+        }
+    }
+
+```
+
+### Exercise - Fizzbuzz
+
+```java
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Number: ");
+        int number = scanner.nextInt();
+
+        if (number % 3 == 0 && number % 5 == 0)
+            System.out.println("FizzBuzz");
+        else if (number % 5 == 0)
+            System.out.println("Fizz");
+        else if (number % 3 == 0)
+            System.out.println("Buzz");
+        else
+            System.out.println(number);
+    }
+```
+
+### For Loops
+
+For loop is used when we know the number of iterations in advance.
+```java
+public static void main(String[] args){
+    for (int i = 0; i < 5; i++){
+        System.out.println("Hello, World! " + i);
+    }
+
+    for (int i = 5; i > 0; i--) {
+        System.out.println("Hello, World! " + j);
+    }
+}
+```
+
+### While Loops
+While loop is used when we don't know the number of iterations in advance.
+
+```java
+public static void main(String[] args){
+    int i = 5;
+    while (i > 0){
+        System.out.println("Hello, World! " + i);
+        i--;
+    }
+
+    int i = 1;
+    while (i <= 5){
+        System.out.println("Hello, World! " + i);
+        i++;
+    }
+}
+
+```
+
+NOTE:
+- We cannot use comparison operator between referene type. Because this operator compare the address or string objects, not their values. 
+- Instead we can use `equals` method to compare the values of reference types.
+
+
+```java
+// Work until quit
+public static void main(String[] args) {
+        String input = "";
+        Scanner scanner = new Scanner(System.in);
+
+        while (!input.equals("quit")){
+            System.out.print("Input: ");
+            input = scanner.next().toLowerCase();
+            System.out.println(input);
+        }
+    }
+}
+```
+
+### Do while loops
+
+Do while loops, executed at least once.
+
+```java
+    public static void main(String[] args) {
+    String input = "";
+    Scanner scanner = new Scanner(System.in); 
+
+    do {
+        System.out.print("Input: ");
+        input = scanner.next().toLowerCase();
+        System.out.println(input);
+    } while (!input.equals(("quit")));
+}
+
+```
+
+### Break and Continue Statements
+
+```java
+    public static void main(String[] args) {
+        String input = "";
+        Scanner scanner = new Scanner(System.in);
+
+        while (!input.equals("quit")){
+            System.out.print("Input: ");
+            input = scanner.next().toLowerCase();
+            if (input.equals("pass"))
+                continue;
+            if (input.equals("quit"))
+                break;
+            System.out.println(input);
+        }
+    }
+
+```
+
+### For Each loop
+
+We use iterate over Arrays or collections.
+
+Limitations
+- We cannot get the index of the current item.
+- Always Forward only
+
+```java
+    public static void main(String[] args) {
+        String[] fruits = {"Apple", "Mango", "Orange"};
+
+        // forEach 
+        for (String fruit: fruits)
+            System.out.println(fruit);
+    }
+
+```
+
+### Exercise - Mortagege Calc V2 
+
+```java
+import java.text.NumberFormat;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        final byte MONTHS_IN_YEAR = 12;
+        final byte PERCENT = 100;
+
+        int principal = 0;
+        float annualInterest = 0;
+        int years  = 0;
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("Principal ($1K - $1M): ");
+            principal = scanner.nextInt();   // p
+            if (principal < 1_000_000_0 && principal > 1000)
+                break;
+
+            System.out.println("Enter a number between 1,000 and 1,000,000.");
+        }
+
+        while(true) {
+            System.out.print("Annual Interest Rate: ");
+            annualInterest = scanner.nextFloat();
+            if (annualInterest > 0 && annualInterest < 30)
+                break;
+
+            System.out.println("Enter a value greater than 0 and less than 30.");
+
+        }
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+
+        while (true) {
+            System.out.print("Period (Years): ");
+            years = scanner.nextInt();
+            if (years > 0 && years <= 30)
+                break;
+
+            System.out.println("Enter a value between 1 and 30");
+        }
+        int numberOfPayments = years * MONTHS_IN_YEAR; // n
+
+        double mortgage = principal
+                * (monthlyInterest * Math.pow((1+ monthlyInterest), numberOfPayments)
+                / (Math.pow((1+ monthlyInterest), numberOfPayments) - 1) );
+
+        String mortgageInDollar = NumberFormat.getCurrencyInstance().format(mortgage);
+        System.out.println("Mortgage: " + mortgageInDollar);
+    }
+}
+
+```
+
+## Clean Coding
+
+```java
+// Void
+public class Main {
+    public static void main(String[] args) {
+        greet("John");
+        greet("Mary");
+    }
+    
+    public static void greet(String name){
+        System.out.println("Hello " + name);
+    }
+}
+```
+
+// Return value
+```java
+    public static void main(String[] args) {
+        String message = greet("John");
+        System.out.println(message);
+    }
+
+    public static String greet(String name){
+        return "Hello " + name;
+    }
+
+```
+
+### Refactoring 
+
+Changing the structure of the code without changing its behavior.
+
