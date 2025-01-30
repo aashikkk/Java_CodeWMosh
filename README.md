@@ -83,9 +83,9 @@ javac Main.java
 java Main
 ```
 
-![img_3.png](img_3.png
+![img_3.png](imgs/img_3.png)
 
-![img_4.png](imgs/img_4.png)
+![img.png](imgs/img_12.png)
 
 ## Types
 1. Variables and constants
@@ -787,3 +787,352 @@ public class Main {
 
 Changing the structure of the code without changing its behavior.
 
+```java
+// V3 - Create a method
+import java.text.NumberFormat;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args){
+        int principal = 0;
+        float annualInterest = 0;
+        byte years  = 0;
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("Principal ($1K - $1M): ");
+            principal = scanner.nextInt();   // p
+            if (principal < 1_000_000_0 && principal > 1000)
+                break;
+
+            System.out.println("Enter a number between 1,000 and 1,000,000.");
+        }
+
+        while(true) {
+            System.out.print("Annual Interest Rate: ");
+            annualInterest = scanner.nextFloat();
+            if (annualInterest > 0 && annualInterest < 30)
+                break;
+
+            System.out.println("Enter a value greater than 0 and less than 30.");
+        }
+
+        while (true) {
+            System.out.print("Period (Years): ");
+            years = scanner.nextByte();
+            if (years > 0 && years <= 30)
+                break;
+
+            System.out.println("Enter a value between 1 and 30");
+        }
+
+        double mortgage = calculateMortgage(annualInterest, principal, years);
+
+        String mortgageInDollar = NumberFormat.getCurrencyInstance().format(mortgage);
+        System.out.println("Mortgage: " + mortgageInDollar);
+    }
+
+    public static double calculateMortgage(
+            float annualInterest,
+            int principal,
+            byte years){
+        final byte MONTHS_IN_YEAR = 12;
+        final byte PERCENT = 100;
+
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+        short numberOfPayments = (short)(years * MONTHS_IN_YEAR); // n
+
+        return principal
+                * (monthlyInterest * Math.pow((1+ monthlyInterest), numberOfPayments)
+                / (Math.pow((1+ monthlyInterest), numberOfPayments) - 1) );
+    }
+}
+
+```
+
+Refactor Repetitive patters (While loop)
+- We cannot reuse read input logic, because one is nextInt(), nextFloat() and nextByte(). So creating separate functions for this is no use.
+- So we can create a generic function to read input that returns double then we can cast it to int, float or byte.
+
+```java
+import java.text.NumberFormat;
+import java.util.Scanner;
+
+// v4
+public class Main {
+    public static void main(String[] args){
+        int principal = (int) readNumber("Principal ($1K - $1M): ", 1000, 1_000_000);
+        float annualInterest = (float) readNumber("Annual Interest Rate: ", 0, 30);
+        byte years = (byte) readNumber("Period (Years): ", 0, 30);
+
+        double mortgage = calculateMortgage(annualInterest, principal, years);
+
+        String mortgageInDollar = NumberFormat.getCurrencyInstance().format(mortgage);
+        System.out.println("Mortgage: " + mortgageInDollar);
+    }
+
+    public static double readNumber(String prompt, double min, double max){
+        Scanner scanner = new Scanner(System.in);
+        double value;
+        while (true) {
+            System.out.print(prompt);
+            value = scanner.nextFloat();   // p
+            if (value < max && value > min)
+                break;
+
+            System.out.println("Enter a number between " + min + " and "+ max);
+        }
+        return value;
+    }
+
+    public static double calculateMortgage(
+            float annualInterest,
+            int principal,
+            byte years){
+        final byte MONTHS_IN_YEAR = 12;
+        final byte PERCENT = 100;
+
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+        short numberOfPayments = (short)(years * MONTHS_IN_YEAR); // n
+
+        return principal
+                * (monthlyInterest * Math.pow((1+ monthlyInterest), numberOfPayments)
+                / (Math.pow((1+ monthlyInterest), numberOfPayments) - 1) );
+    }
+}
+
+```
+
+### Exercise - Project Payment Schedule
+
+```java
+import java.text.NumberFormat;
+import java.util.Scanner;
+
+public class Main {
+    // make static since all methods in this class are static and they can only access static variables.
+    // in this case, this variable are called as fields. so the field define at the class level and its accessible to all methods in the class
+    final static byte MONTHS_IN_YEAR = 12;
+    final static byte PERCENT = 100;
+
+    public static void main(String[] args){
+        int principal = (int) readNumber("Principal ($1K - $1M): ", 1000, 1_000_000);
+        float annualInterest = (float) readNumber("Annual Interest Rate: ", 0, 30);
+        byte years = (byte) readNumber("Period (Years): ", 0, 30);
+
+        double mortgage = calculateMortgage(annualInterest, principal, years);
+        String mortgageInDollar = NumberFormat.getCurrencyInstance().format(mortgage);
+        System.out.println();
+        System.out.println("MORTGAGE");
+        System.out.println("--------");
+        System.out.println("Monthly Payments: " + mortgageInDollar);
+        System.out.println();
+
+        System.out.println("PAYMENT SCHEDULE");
+        System.out.println("----------------");
+        for (short month = 1; month <= years * MONTHS_IN_YEAR; month++) {
+            double balance = calculateBalance(annualInterest, principal, years, month);
+            System.out.println(NumberFormat.getCurrencyInstance().format(balance));
+        }
+
+    }
+
+    public static double readNumber(String prompt, double min, double max){
+        Scanner scanner = new Scanner(System.in);
+        double value;
+        while (true) {
+            System.out.print(prompt);
+            value = scanner.nextFloat();   // p
+            if (value < max && value > min)
+                break;
+
+            System.out.println("Enter a number between " + min + " and "+ max);
+        }
+        return value;
+    }
+
+    public static double calculateBalance(float annualInterest,
+                                          int principal,
+                                          byte years,
+                                          short numberOfPaymentsMade){
+
+
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+        int numberOfPayments = (years * MONTHS_IN_YEAR); // n
+        
+        double balance = principal
+                * (Math.pow(1 + monthlyInterest, numberOfPayments) - Math.pow(1 + monthlyInterest, numberOfPaymentsMade))
+                / (Math.pow(1 + monthlyInterest, numberOfPayments) - 1 );
+
+        return balance;
+    }
+
+    public static double calculateMortgage(
+            float annualInterest,
+            int principal,
+            byte years){
+
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+        short numberOfPayments = (short)(years * MONTHS_IN_YEAR); // n
+
+        double mortgage = principal
+                * (monthlyInterest * Math.pow((1+ monthlyInterest), numberOfPayments)
+                / (Math.pow((1+ monthlyInterest), numberOfPayments) - 1) );
+
+        return mortgage;
+    }
+}
+
+// monthlyInterest and numberOfPayments is gonna change in the future. so duplicate 2 times is not a big deal. 
+// we can get rid when we go through OOP
+```
+
+-----------After Refactor--------
+```java
+import java.text.NumberFormat;
+import java.util.Scanner;
+
+public class Main {
+    final static byte MONTHS_IN_YEAR = 12;
+    final static byte PERCENT = 100;
+
+    public static void main(String[] args){
+        int principal = (int) readNumber("Principal ($1K - $1M): ", 1000, 1_000_000);
+        float annualInterest = (float) readNumber("Annual Interest Rate: ", 0, 30);
+        byte years = (byte) readNumber("Period (Years): ", 0, 30);
+
+        printMortgage(principal, annualInterest, years);
+        printPaymentSchedule(principal, annualInterest, years);
+    }
+
+    private static void printMortgage(int principal, float annualInterest, byte years) {
+        double mortgage = calculateMortgage(annualInterest, principal, years);
+        String mortgageInDollar = NumberFormat.getCurrencyInstance().format(mortgage);
+        System.out.println();
+        System.out.println("MORTGAGE");
+        System.out.println("--------");
+        System.out.println("Monthly Payments: " + mortgageInDollar);
+        System.out.println();
+    }
+
+    private static void printPaymentSchedule(int principal, float annualInterest, byte years) {
+        System.out.println("PAYMENT SCHEDULE");
+        System.out.println("----------------");
+        for (short month = 1; month <= years * MONTHS_IN_YEAR; month++) {
+            double balance = calculateBalance(annualInterest, principal, years, month);
+            System.out.println(NumberFormat.getCurrencyInstance().format(balance));
+        }
+    }
+
+    public static double readNumber(String prompt, double min, double max){
+        Scanner scanner = new Scanner(System.in);
+        double value;
+        while (true) {
+            System.out.print(prompt);
+            value = scanner.nextFloat();   // p
+            if (value < max && value > min)
+                break;
+
+            System.out.println("Enter a number between " + min + " and "+ max);
+        }
+        return value;
+    }
+
+    public static double calculateBalance(float annualInterest,
+                                          int principal,
+                                          byte years,
+                                          short numberOfPaymentsMade){
+
+
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+        int numberOfPayments = (years * MONTHS_IN_YEAR); // n
+
+        double balance = principal
+                * (Math.pow(1 + monthlyInterest, numberOfPayments) - Math.pow(1 + monthlyInterest, numberOfPaymentsMade))
+                / (Math.pow(1 + monthlyInterest, numberOfPayments) - 1 );
+
+        return balance;
+    }
+
+    public static double calculateMortgage(
+            float annualInterest,
+            int principal,
+            byte years){
+
+        float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+        short numberOfPayments = (short)(years * MONTHS_IN_YEAR); // n
+
+        double mortgage = principal
+                * (monthlyInterest * Math.pow((1+ monthlyInterest), numberOfPayments)
+                / (Math.pow((1+ monthlyInterest), numberOfPayments) - 1) );
+
+        return mortgage;
+
+    }
+
+}
+
+```
+
+## Debugging and Deploying Applications
+
+### Types of Errors
+
+1. **Compile-time Errors**:
+    - These errors occur when you compile your code.
+    - They are usually syntax errors, such as missing semicolons, incorrect use of keywords, or mismatched parentheses.
+    - The compiler detects these errors and provides error messages to help you fix them.
+- Use google or stackoverflow if that not understandable
+
+2. **Runtime Errors**:
+    - These errors occur while the program is running.
+    - They are often caused by illegal operations, such as dividing by zero, accessing invalid array indices, or null pointer dereferences.
+    - Runtime errors cause the program to terminate abnormally.
+- Use debugger
+
+3. **Logical Errors**:
+    - These errors occur when the program runs without crashing but produces incorrect results.
+    - They are often due to mistakes in the program's logic, such as incorrect calculations or flawed algorithms.
+    - Logical errors are the hardest to detect because the compiler and runtime do not provide error messages for them.
+
+### Packaging Java Applications
+
+Packaging Java applications involves bundling your compiled code and resources into a format that can be easily distributed and executed. The most common format for packaging Java applications is the JAR (Java ARchive) file. Here are the steps to package a Java application into a JAR file:
+
+### GUI 
+1. File -> Project Structure -> Artifacts -> + -> JAR -> From modules with dependencies
+2. Select the main class
+3. Build -> Build Artifacts -> Build
+4. The JAR file will be generated in the `out/artifacts` directory.
+5. If you want to run the JAR file with a double click, you can associate the `.jar` extension with the Java runtime with open with terminal
+6. Run the JAR file using the `java -jar jarFileName` command.
+
+-----
+### CMD
+1. **Compile the Java Code**: Ensure all your `.java` files are compiled into `.class` files.
+
+   ```cmd
+   javac -d out src\*.java
+   ```
+
+2. **Create a Manifest File**: The manifest file (`MANIFEST.MF`) contains metadata about the JAR file, including the main class to be executed.
+
+   ```plaintext
+   Manifest-Version: 1.0
+   Main-Class: Main
+   ```
+
+3. **Package into a JAR File**: Use the `jar` command to create the JAR file, including the compiled classes and the manifest file.
+
+   ```cmd
+   jar cfm MyApplication.jar MANIFEST.MF -C out .
+   ```
+
+4. **Run the JAR File**: You can run the packaged JAR file using the `java -jar` command.
+
+   ```cmd
+   java -jar MyApplication.jar
+   ```
+
+This process creates a self-contained JAR file that can be distributed and executed on any machine with a compatible JVM.
