@@ -60,7 +60,16 @@
           10. [Setter Injection](#setter-injection)
           11. [Method Injection](#method-injection)
        12. [Interface Segregation Principle](#interface-segregation-principle)
+       13. [MyTube Video Platform - Project](#mytube-video-platform---project)
+       14. [Fields in Interfaces](#fields)
+       15. [Static Methods in Interfaces](#static-methods)
+       16. [Private Methods in Interfaces](#private-methods)
+       17. [Interface and Abstract Methods](#interfaces-and-abstract-methods)
+       18. [When to use Interface](#when-to-use-interfaces)
+       19. [Summary in Interfaces](#summary-)
 
+3. [Advanced Topics](#advanced-topics)
+   1. [Exceptions](#exceptions)
 
 
 
@@ -3239,7 +3248,7 @@ public class Main {
 #### `User.java` and `Video.java` will remain same.
 
 
-### Fields 
+### Fields
 // Bad feature in interface,  
 
 - Programmers think this is not a good one. 
@@ -3412,7 +3421,7 @@ Ex2: In Mortage Calculator, we dont have MortgageCalc Interface, bcz that's pret
 ![img_50.png](img_50.png) - 
 
 
-### Summary
+### Summary 
 
 - We use interfaces to build loosely-coupled, extensible and testable
   applications.  
@@ -3525,3 +3534,530 @@ public class Main {
   to decouple a class from its dependencies so you can swap these
   dependencies. This allows building applications that are extensible and
   testable
+
+
+
+# Advanced Topics
+![img_52.png](img_52.png)
+![img_53.png](img_53.png)
+
+## Exceptions
+![img_54.png](img_54.png)
+
+
+```java
+// ExceptionDemo.java
+package exceptions;
+
+public class ExceptionsDemo {
+    public static void show(){
+        sayHello(null); // This will throw a NullPointerException
+    }
+
+    public static void sayHello(String name){
+        System.out.println("Hello " + name.toUpperCase() );
+    }
+}
+
+// Main.java
+public static void main(String[] args) {
+    ExceptionsDemo.show();
+}
+```
+
+![img_55.png](img_55.png) - Unchecked Exception
+
+
+### Types of Exceptions
+1. Checked aka Compile time exception
+2. Unchecked aka Runtime exception
+3. Error
+
+![img_57.png](img_57.png)
+
+**Checked exception** - Compile time exception. You have to handle it. Ex: IOException, SQLException
+
+**Unchecked exception** - Runtime exception. You don't have to handle it. Ex: NullPointerException, IllegalArgumentException
+
+![img_56.png](img_56.png)
+
+
+**Error** - You cannot handle it. Ex: OutOfMemoryError, StackOverflowError
+
+### Exception Hierarchy
+
+![img_58.png](img_58.png)
+
+![img_59.png](img_59.png)
+
+### Catching Exceptions
+
+- Generate by clicking more options
+![img_60.png](img_60.png)
+
+
+```java
+package exceptions;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+public class ExceptionsDemo {
+    public static void show(){
+        try {
+            var reader = new FileReader("file.txt");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+
+/*
+Manually Typed Exception
+    * try{
+        var reader = new FileReader("file.txt");
+        System.out.println("File opened");
+       } catch (FileNotFoundException ex){
+            System.out.println("File not found "  + ex.getMessage());
+    }
+* */
+```
+
+### Catching a multiple type of Exception
+
+```java
+package exceptions;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+public class ExceptionsDemo {
+    public static void show(){
+        try {
+            var reader = new FileReader("file.txt");
+            var value = reader.read();
+            new SimpleDateFormat().parse("");
+        }
+         catch (IOException | ParseException e) {
+            System.out.println("Could not read data.");
+        }
+//        catch (ParseException e) {
+//            throw new RuntimeException(e);
+//        }
+    }
+}
+
+/*
+* When first catch block is executed, the control is transferred to the catch block and the second catch block is not executed.
+* IOException is thrown by FileReader.read() method and it is a subclass of FileNotFoundException.
+            IOException ex = new FileNotFoundException();
+            *
+* public class ExceptionsDemo {
+    public static void show(){
+        try {
+            var reader = new FileReader("file.txt");
+            var value = reader.read();
+        } catch (IOException e) {
+            System.out.println("Could not read data.");
+        }
+    }
+}
+* If we change the order of catch blocks, the code will not compile.
+* Just make OR operator in catch block to make it 2 exceptions in one catch block.
+* */
+```
+
+### The `finally` Block
+
+- The `finally` block is used to execute a block of code regardless of whether an exception is thrown or not.
+- It is used to release resources (such as closing a file or a database connection) or to perform cleanup tasks.
+
+```java
+public class ExceptionsDemo {
+    public static void show(){
+        FileReader reader = null;
+        try {
+            reader = new FileReader("file.txt");
+            var value = reader.read();
+        }
+         catch (IOException e) {
+            System.out.println("Could not read data.");
+        }
+        finally {
+            if (reader != null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // This finally is ugly btw.
+    }
+}
+```
+
+### Try-with-resource statement
+
+- The `try-with-resources` statement is a try statement that declares one or more resources.
+- A resource is an object that must be closed after the program is finished with it.
+- The `try-with-resources` statement ensures that each resource is closed at the end of the statement.
+
+```java
+import java.io.FileWriter;
+
+public class ExceptionsDemo {
+    public static void show() {
+        try (
+                var reader = new FileReader("file.txt");
+                var writer = new FileWriter("..");
+        ) {
+            var value = reader.read();
+        } catch (IOException e) {
+            System.out.println("Could not read data.");
+        }
+    }
+}
+
+```
+
+The `try-with-resources` statement in Java is a try statement that declares one or more resources. A resource is an object that must be closed after the program is finished with it. The `try-with-resources` statement ensures that each resource is closed at the end of the statement, which helps to avoid resource leaks.
+
+### Key Points:
+- **Automatic Resource Management**: Resources are automatically closed at the end of the statement.
+- **Implements `AutoCloseable`**: The resource must implement the `AutoCloseable` interface.
+- **Simplifies Code**: Reduces the need for explicit `finally` blocks to close resources.
+
+### Example
+
+Here is an example demonstrating the use of the `try-with-resources` statement:
+
+```java
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class TryWithResourcesExample {
+    public static void main(String[] args) {
+        try (
+            FileReader reader = new FileReader("input.txt");
+            FileWriter writer = new FileWriter("output.txt")
+        ) {
+            int data;
+            while ((data = reader.read()) != -1) {
+                writer.write(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Explanation
+- **Resource Declaration**: `FileReader` and `FileWriter` are declared in the try-with-resources statement.
+- **Automatic Closing**: Both `reader` and `writer` are automatically closed at the end of the try block.
+- **Exception Handling**: Any `IOException` that occurs is caught in the catch block.
+
+### Throwing Exceptions
+
+- You can throw an exception using the `throw` keyword.
+- You can throw any exception, including checked exceptions, unchecked exceptions, and errors.
+- You can create your own custom exceptions by extending the `Exception` class.
+
+In Java, exceptions are thrown to signal that an error or unexpected condition has occurred. This allows the program to handle errors gracefully and maintain control flow. You can throw exceptions using the `throw` keyword.
+
+### Key Points:
+- **Throwing Exceptions**: Use the `throw` keyword followed by an instance of an exception.
+- **Checked Exceptions**: Must be declared in the method signature using the `throws` keyword.
+- **Unchecked Exceptions**: Do not need to be declared in the method signature.
+- **Custom Exceptions**: You can create your own exceptions by extending the `Exception` class or `RuntimeException` class.
+
+### Example
+
+Here is an example demonstrating how to throw exceptions:
+
+```java
+public class Account {
+    private float balance;
+
+    public void deposit(float value) throws IOException {
+        if (value < 0) {
+            throw new IOException("Negative value not allowed");
+        }
+        balance += value;
+    }
+
+    public void withdraw(float value) {
+        if (value > balance) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+        balance -= value;
+    }
+}
+```
+
+### Explanation
+- **Checked Exception**: The `deposit` method throws an `IOException` if the value is negative. This must be declared in the method signature.
+- **Unchecked Exception**: The `withdraw` method throws an `IllegalArgumentException` if the value is greater than the balance. This does not need to be declared in the method signature.
+- **Custom Message**: Exceptions can include custom messages to provide more context about the error.
+
+Ex2:
+```java
+// Account.java
+package exceptions;
+
+import java.io.IOException;
+
+public class Account {
+    public void deposit(float value) throws IOException {
+        if (value < 0) throw new IOException();
+        // this technique is called defensive programming
+        // it is used to prevent the program from crashing
+    }
+}
+
+// Main.java
+import exceptions.ExceptionsDemo;
+
+public class Main {
+    public static void main(String[] args) {
+        ExceptionsDemo.show();
+    }
+}
+```
+
+
+### Rethrowing Exceptions
+
+Rethrowing exceptions in Java allows you to catch an exception in a catch block and then throw it again to be handled by another catch block or to propagate it up the call stack. This is useful when you want to log the exception or perform some other action before passing it on.
+
+### Key Points:
+- **Catch and Rethrow**: Catch an exception, perform some action (like logging), and then rethrow it.
+- **Preserve Stack Trace**: Rethrowing the same exception preserves the original stack trace, which is useful for debugging.
+- **Method Signature**: The method must declare that it throws the exception if it is a checked exception.
+
+### Example
+
+Here is an example demonstrating how to rethrow exceptions:
+
+#### `Account.java`
+```java
+package exceptions;
+
+import java.io.IOException;
+
+public class Account {
+    public void deposit(float value)  {
+        if (value < 0) throw new IllegalArgumentException("Negative value not allowed");
+    }
+}
+```
+
+#### `ExceptionsDemo.java`
+```java
+package exceptions;
+
+import java.io.IOException;
+
+public class ExceptionsDemo {
+    public static void show() throws IOException {
+        var account = new Account();
+        try {
+            account.deposit(-1);
+        } catch (IOException e) {
+            System.out.println("Logging exception: " + e.getMessage());
+            throw e; // Rethrow the exception
+        }
+    }
+}
+```
+
+#### `Main.java`
+```java
+import exceptions.ExceptionsDemo;
+
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            ExceptionsDemo.show();
+        } catch (IOException e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+}
+```
+
+### Explanation
+- **Catch and Log**: The `ExceptionsDemo.show` method catches the `IOException`, logs it, and then rethrows it.
+- **Rethrow**: The exception is rethrown to be handled by the caller of the `show` method.
+- **Handle in Main**: The `Main` class catches the rethrown exception and handles it appropriately.
+
+
+### Custom Exceptions
+
+Custom exceptions in Java allow you to create your own exception classes to handle specific error conditions in your application. This can make your code more readable and maintainable by providing meaningful exception names and messages.
+
+### Key Points:
+- **Extending Exception Classes**: Custom exceptions are created by extending the `Exception` class (for checked exceptions) or the `RuntimeException` class (for unchecked exceptions).
+- **Constructors**: Custom exceptions typically provide constructors to set error messages and other relevant information.
+- **Usage**: Custom exceptions can be thrown and caught like any other exceptions.
+
+### Example
+
+Here is an example demonstrating how to create and use a custom exception:
+
+#### `InsufficientFundsException.java`
+```java
+package exceptions;
+
+public class InsufficientFundsException extends Exception {
+    public InsufficientFundsException() {
+        super("Insufficient funds in your account");
+    }
+
+    public InsufficientFundsException(String message) {
+        super(message);
+    }
+}
+```
+
+#### `Account.java`
+```java
+package exceptions;
+
+public class Account {
+    private float balance;
+
+    public void withdraw(float amount) throws InsufficientFundsException {
+        if (amount > balance) {
+            throw new InsufficientFundsException("Attempt to withdraw " + amount + " with only " + balance + " in account");
+        }
+        balance -= amount;
+    }
+}
+```
+
+#### `Main.java`
+```java
+import exceptions.Account;
+import exceptions.InsufficientFundsException;
+
+public class Main {
+    public static void main(String[] args) {
+        Account account = new Account();
+        try {
+            account.withdraw(100);
+        } catch (InsufficientFundsException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+```
+
+### Explanation
+- **Custom Exception Class**: `InsufficientFundsException` extends `Exception` and provides constructors for default and custom messages.
+- **Throwing Custom Exception**: The `withdraw` method in `Account` class throws `InsufficientFundsException` if the withdrawal amount exceeds the balance.
+- **Handling Custom Exception**: In the `Main` class, the custom exception is caught and handled appropriately.
+
+
+### Chaining Exceptions
+
+Chaining exceptions in Java allows you to associate one exception with another, providing more context about the error. This is useful when you want to preserve the original exception while adding additional information.
+
+### Key Points:
+- **Cause**: The original exception that caused the current exception.
+- **Constructor**: Use the constructor of the exception class to pass the cause.
+- **Method**: Use the `initCause` method to set the cause of an exception.
+
+### Example
+
+Here is an example demonstrating how to chain exceptions:
+
+#### `AccountException.java`
+```java
+package exceptions;
+
+public class AccountException extends Exception{
+    public AccountException(Exception cause){
+        super(cause);
+    }
+}
+```
+
+#### `InsufficientFundsException.java`
+```java
+package exceptions;
+
+// Checked -> Exception
+// Unchecked (runtime) -> RuntimeException
+
+public class InsufficientFundException extends Exception{
+
+    public InsufficientFundException() {
+        super("Insufficient funds in your account");
+    }
+
+    public InsufficientFundException(String message){
+        super(message);
+    }
+}
+
+```
+
+#### `Account.java`
+```java
+package exceptions;
+
+public class Account {
+    private int balance;
+
+    public void deposit(float value)  {
+        if (value < 0) throw new IllegalArgumentException();
+    }
+
+    public void withdraw(float value) throws AccountException {
+        if (value > balance)
+            throw new AccountException(new InsufficientFundException());
+
+    }
+}
+
+
+//public void withdraw(float value) throws AccountException {
+//    if (value > balance){
+//        var fundsException = new InsufficientFundException();
+//        var accountException = new AccountException();
+//        accountException.initCause(fundsException);
+//        throw accountException;
+//    }
+//}
+```
+
+#### `Main.java`
+```java
+import exceptions.ExceptionsDemo;
+
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            ExceptionsDemo.show();
+        } catch (Throwable e) {
+            System.out.println("An unexpected error occurred");
+        }
+    }
+}
+```
+
+### Explanation
+- **Custom Exception Class**: `AccountException` includes a constructor that accepts a message and a cause.
+- **Throwing Exception**: The `withdraw` method in `Account` class throws an `AccountException` with an `InsufficientFundsException` as the cause.
+- **Handling Exception**: In the `Main` class, the chained exception is caught, and both the main message and the cause message are printed.
+
