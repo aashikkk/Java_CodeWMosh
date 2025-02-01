@@ -2855,4 +2855,673 @@ When designing `interface`, make it small or light weight, don't make it as fat.
 
 ### Interface Segregation Principle
 
-Divide big interfaces into smaller ones. This is called the Interface Segregation Principle.
+- Divide big interfaces into smaller ones. This is called the Interface Segregation Principle.
+- Supports Multiple Interfaces
+- But not Multiple Inheritance
+
+The Interface Segregation Principle (ISP) is one of the SOLID principles of object-oriented design. It states that no client should be forced to depend on methods it does not use. Instead of having a large, "fat" interface, it's better to have multiple smaller, specific interfaces.
+
+### Example
+
+Let's consider an example where we have a `UIWidget` interface that is too large and violates the ISP.
+
+#### Initial `UIWidget` Interface (Violates ISP)
+```java
+public interface UIWidget {
+    void draw();
+    void resize();
+    void move();
+    void click();
+    void drag();
+}
+```
+
+In this case, a class implementing `UIWidget` might not need all these methods. For example, a `Button` might not need `drag()`.
+
+### Refactored Interfaces (Adheres to ISP)
+
+We can split the `UIWidget` interface into smaller, more specific interfaces:
+
+#### `Drawable` Interface
+```java
+public interface Drawable {
+    void draw();
+}
+```
+
+#### `Resizable` Interface
+```java
+public interface Resizable {
+    void resize();
+}
+```
+
+#### `Movable` Interface
+```java
+public interface Movable {
+    void move();
+}
+```
+
+#### `Clickable` Interface
+```java
+public interface Clickable {
+    void click();
+}
+```
+
+#### `Draggable` Interface
+```java
+public interface Draggable {
+    void drag();
+}
+```
+
+### Implementing Classes
+
+Now, classes can implement only the interfaces they need:
+
+#### `Button` Class
+```java
+public class Button implements Drawable, Clickable {
+    @Override
+    public void draw() {
+        // Implementation
+    }
+
+    @Override
+    public void click() {
+        // Implementation
+    }
+}
+```
+
+#### `Window` Class
+```java
+public class Window implements Drawable, Resizable, Movable {
+    @Override
+    public void draw() {
+        // Implementation
+    }
+
+    @Override
+    public void resize() {
+        // Implementation
+    }
+
+    @Override
+    public void move() {
+        // Implementation
+    }
+}
+```
+
+By following the Interface Segregation Principle, we ensure that classes only implement the methods they actually need, leading to a more maintainable and flexible codebase.
+
+#### Ex2:
+
+```java
+public interface UIWidget {
+    void drag();
+    void resize(int size);
+    void render();
+}
+
+//when we change the parameter of resize, it will affect all the classes. So, we can divide into smaller interfaces.
+```
+
+```java
+//UIWidget.java
+public interface UIWidget extends Draggable, Resizable {
+    void render();
+}
+
+// Resizable.java
+public interface Resizable {
+    void resize(int size);
+}
+
+// Draggable.java
+public interface Draggable {
+    void drag();
+}
+
+// Dragger.java
+public class Dragger {
+    public void drag(Draggable draggable){
+        draggable.drag();
+        System.out.println("Dragging done!");
+    }
+// If we use UIWidget we can use other methods as well. But we only need drag method. So, we can use Draggable interface.
+}
+
+```
+
+### MyTube Video Platform - Project
+
+```java
+// EmailService.java
+package com.mytube;
+
+public class EmailService {
+    public void sendEmail(User user) {
+        System.out.println("Notifying " + user.getEmail() + "...");
+        System.out.println("Done!\n");
+    }
+}
+
+// VideoDatabase.java
+package com.mytube;
+
+public class VideoDatabase {
+    public void store(Video video) {
+        System.out.println("Storing video metadata in a SQL database...");
+        System.out.println("Title: " + video.getTitle());
+        System.out.println("File Name: " + video.getFileName());
+        System.out.println("Done!\n");
+    }
+}
+
+// VideoEncoder.java
+package com.mytube;
+
+public class VideoEncoder {
+    public void encode(Video video) {
+        System.out.println("Encoding video...");
+        System.out.println("Done!\n");
+    }
+}
+
+// User.java
+package com.mytube;
+
+public class User {
+    private String email;
+
+    public User(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+}
+
+
+// Video.java
+package com.mytube;
+
+public class Video {
+    private String fileName;
+    private String title;
+    private User user;
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+}
+
+// VideoProcessor.java
+package com.mytube;
+
+public class VideoProcessor {
+    public void process(Video video) {
+        var encoder = new VideoEncoder();
+        encoder.encode(video);
+
+        var database = new VideoDatabase();
+        database.store(video);
+
+        var emailService = new EmailService();
+        emailService.sendEmail(video.getUser());
+    }
+}
+
+// Main.java
+package com.mytube;
+
+public class Main {
+
+    public static void main(String[] args) {
+        var video = new Video();
+        video.setFileName("birthday.mp4");
+        video.setTitle("Jennifer's birthday");
+        video.setUser(new User("john@domain.com"));
+
+        var processor = new VideoProcessor();
+        processor.process(video);
+    }
+}
+
+```
+
+Refactor this code to use interfaces and dependency injection. (Tightly coupled to loosely coupled)
+
+#### `EmailService.java`
+```java
+package com.mytube;
+
+public interface EmailService {
+    void sendEmail(User user);
+}
+```
+
+#### `VideoDatabase.java`
+```java
+package com.mytube;
+
+public interface VideoDatabase {
+    void store(Video video);
+}
+```
+
+#### `VideoEncoder.java`
+```java
+package com.mytube;
+
+public interface VideoEncoder {
+    void encode(Video video);
+}
+```
+
+#### `NotificationService.java`
+```java
+package com.mytube;
+
+public class NotificationService implements EmailService {
+    @Override
+    public void sendEmail(User user) {
+        System.out.println("Notifying " + user.getEmail() + "...");
+        System.out.println("Done!\n");
+    }
+}
+```
+
+#### `SQLVideoDatabase.java`
+```java
+package com.mytube;
+
+public class SqlVideoDatabase implements VideoDatabase {
+    @Override
+    public void store(Video video) {
+        System.out.println("Storing video metadata in a SQL database...");
+        System.out.println("Title: " + video.getTitle());
+        System.out.println("File Name: " + video.getFileName());
+        System.out.println("Done!\n");
+    }
+}
+```
+
+#### `XVideoEncoder.java`
+```java
+package com.mytube;
+
+public class XVideoEncoder implements VideoEncoder {
+    @Override
+    public void encode(Video video) {
+        System.out.println("Encoding video...");
+        System.out.println("Done!\n");
+    }
+}
+```
+
+#### `VideoProcessor.java`
+```java
+package com.mytube;
+
+public class VideoProcessor {
+    private VideoEncoder encoder;
+    private VideoDatabase database;
+    private EmailService emailService;
+
+    // Constructor Injection
+    public VideoProcessor(VideoEncoder encoder, VideoDatabase database, EmailService emailService) {
+        this.encoder = encoder;
+        this.database = database;
+        this.emailService = emailService;
+    }
+
+    public void process(Video video) {
+//        var encoder = new XVideoEncoder();
+        encoder.encode(video);
+
+//        var database = new SqlVideoDatabase();
+        database.store(video);
+
+//        var emailService = new NotificationService();
+        emailService.sendEmail(video.getUser());
+    }
+}
+```
+
+#### `Main.java`
+```java
+package com.mytube;
+
+public class Main {
+
+    public static void main(String[] args) {
+        var video = new Video();
+        video.setFileName("birthday.mp4");
+        video.setTitle("Jennifer's birthday");
+        video.setUser(new User("john@domain.com"));
+
+        var processor = new VideoProcessor(new XVideoEncoder(), new SqlVideoDatabase(), new NotificationService());
+        processor.process(video);
+    }
+}
+```
+
+#### `User.java` and `Video.java` will remain same.
+
+
+### Fields 
+// Bad feature in interface,  
+
+- Programmers think this is not a good one. 
+
+In Java, interfaces can contain fields, but these fields are implicitly `public`, `static`, and `final`. This means that they are constants and cannot be changed. Here is an example:
+
+```java
+public interface Constants {
+    // Interface fields
+    int MAX_USERS = 100;
+    String APP_NAME = "MyApplication";
+}
+```
+
+### Explanation
+
+- **Fields**: `MAX_USERS` and `APP_NAME` are fields in the `Constants` interface.
+- **Implicit Modifiers**: These fields are implicitly `public`, `static`, and `final`.
+
+You can access these fields directly using the interface name:
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Max Users: " + Constants.MAX_USERS);
+        System.out.println("App Name: " + Constants.APP_NAME);
+    }
+}
+```
+
+Java supports various features. That doesn't mean you have to use them all. you need to understand the concepts, implications and use them wisely.
+Mosh thinks CONSTANTS HAVE NO PLACES in Interfaces. and that's a bad decision from JAVA team
+
+### Static Methods
+// Bad feature in interface
+
+**Interfaces are about WHAT Not HOWs**
+#### `TaxCalculator.java`
+```java
+public interface TaxCalculator {
+    double calculateTax();
+    
+    static double getTaxableIncome(double income, double expenses){
+        return income - expenses;
+    }
+}
+```
+#### `TaxCalculator2018.java`
+```java
+public class TaxCalculator2018 implements TaxCalculator{
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    @Override
+    public double calculateTax() {
+        TaxCalculator.getTaxableIncome(5000, 1000);
+        return taxableIncome * 0.4;
+    }
+}
+```
+
+Avoid to use static methods in interfaces.
+Instead use abstract class and methods.
+
+#### `TaxCalculator.java`
+```java
+public class TaxCalculator2018 extends AbtractTaxCalculator{
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    @Override
+    public double calculateTax() {
+        getTaxableIncome(5000, 1000);
+        return taxableIncome * 0.4;
+    }
+}
+
+```
+
+#### `AbstractTaxCalculator.java`
+```java
+public abstract class AbtractTaxCalculator implements TaxCalculator{
+
+    protected double getTaxableIncome(double income, double expenses){
+        return income - expenses;
+    }
+}
+
+```
+
+### Private Methods
+
+Java 9 introduced private methods in interfaces. These methods are used to break down complex default methods into smaller, more manageable parts.
+ 
+- When you write a static method,(you shouldnt write anywayyy) you may end up in some repetitive logic, refactor our code and extract to private method inside an interface. That's why this feature is requested and added to interface.
+- Interfaces should not have code, no implementation, no static methods, no private methods, no field nothing. Just DECLARATION. PERIOD.
+
+### Interfaces and Abstract Methods
+
+![img_45.png](img_45.png)
+
+### Interfaces
+- **Purpose**: Define a contract for what a class can do, without specifying how it does it.
+- **Methods**: Can contain abstract methods (method declarations without a body), default methods (with a body), static methods, and private methods (Java 9+).
+- **Fields**: Can contain constants (implicitly `public`, `static`, and `final`).
+- **Multiple Inheritance**: A class can implement multiple interfaces.
+- **Example**:
+
+```java
+public interface Animal {
+    void eat();
+    void sleep();
+}
+```
+
+### Abstract Classes
+- **Purpose**: Provide a base class with some common implementation that other classes can extend.
+- **Methods**: Can contain both abstract methods (without a body) and concrete methods (with a body).
+- **Fields**: Can contain instance variables and constants.
+- **Single Inheritance**: A class can extend only one abstract class.
+- **Example**:
+
+```java
+public abstract class Animal {
+    protected String name;
+
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    public abstract void eat();
+    public void sleep() {
+        System.out.println(name + " is sleeping");
+    }
+}
+```
+
+### Key Differences
+- **Multiple Inheritance**: Interfaces support multiple inheritance, while abstract classes do not.
+- **Implementation**: Abstract classes can provide some implementation, while interfaces cannot (except for default and static methods).
+- **Fields**: Abstract classes can have instance variables, while interfaces can only have constants.
+
+![img_46.png](img_46.png)
+People are abusing this feature, they use as hack to achieve multiple inheritance.
+Interfaces should not be confused with classes, you should keep as contract and minimize the impact of changes, so we can build loosely coupled, extensible, testable applications.   
+
+### When to use Interfaces
+![img_47.png](img_47.png) - use when you decouple a class from dependencies.
+ 
+**Swap implementations** - In future versions, interfaces allow you to swap implementations without changing the code that uses them.
+Ex: VideoProcessor, we can swap the implementation of VideoEncoder, VideoDatabase, EmailService without changing the VideoProcessor class.
+![img_48.png](img_48.png)
+
+Today you may use one service for SendingEmail, Tomorrow you may use OTPService.
+
+Ex2: In Mortage Calculator, we dont have MortgageCalc Interface, bcz that's pretty straightforward. in future we don't end up with that calculator with different. so we don't need interface here. unless for unit testing.
+
+**Extend your Applications** - Interfaces allow you to extend your applications without changing the existing code. This will help to build a new framework for others to use. 
+
+![img_49.png](img_49.png) - Program against interfaces
+
+**Test your class in Isolation** - Interfaces allow you to test your class in isolation. You can create a mock implementation of an interface and test your class without the real implementation.
+
+![img_50.png](img_50.png) - 
+
+
+### Summary
+
+- We use interfaces to build loosely-coupled, extensible and testable
+  applications.  
+
+
+- Tightly coupled code is code that is hard to change because there is a
+  strong dependency between the entities (eg classes) in the code.
+  Changing one class may result in several cascading, breaking changes in
+  the code.
+
+
+![img_51.png](img_51.png)
+- Even though the type of the calculator field in TaxReport is an
+interface, we’re initializing this field to an instance of
+TaxCalculator2018 in the constructor. So, TaxReport is tightly
+coupled to TaxCalculator2018, which is an implementation, not an
+interface.
+
+
+- **Dependency injection** refers to passing or injecting dependencies of a
+   class. 
+
+- We can inject dependencies via `constructors`, `setters` and regular
+  `methods`. 
+
+- The **Interface Segregation Principle (ISP)** suggests that we should
+  segregate or divide big, fat interfaces into smaller ones, each focusing on
+  a single responsibility or capability. Smaller interfaces are less likely to
+  change. Changes to one capability, will only affect a single interface and
+  fewer classes that depend on that interface.  
+
+- `Fields, static and private methods` are all about implementation.
+  `Interfaces` are contracts and should not have any implementation.
+
+
+- **Both are abstract** concepts and **we cannot instantiate** them.
+  
+- Interfaces are contracts and should only have method declarations.
+  
+- Abstract classes are partially-implemented classes. We use them to
+  share some common code across their derivates.
+```java
+// Abstract class
+abstract class Animal {
+    String name;
+
+    // Constructor
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    // Concrete method
+    public void speak() {
+        System.out.println(name + " makes a sound.");
+    }
+
+    // Abstract method (must be implemented by subclasses)
+    abstract void makeSound();
+}
+
+// Subclass implementing the abstract method
+class Dog extends Animal {
+    public Dog(String name) {
+        super(name);
+    }
+
+    @Override
+    void makeSound() {
+        System.out.println(name + " says: Woof!");
+    }
+}
+
+// Another subclass implementing the abstract method
+class Cat extends Animal {
+    public Cat(String name) {
+        super(name);
+    }
+
+    @Override
+    void makeSound() {
+        System.out.println(name + " says: Meow!");
+    }
+}
+
+// Main class to test the abstract class and its subclasses
+public class Main {
+    public static void main(String[] args) {
+        Animal dog = new Dog("Buddy");
+        Animal cat = new Cat("Whiskers");
+
+        dog.speak();   // Output: Buddy makes a sound.
+        dog.makeSound(); // Output: Buddy says: Woof!
+
+        cat.speak();   // Output: Whiskers makes a sound.
+        cat.makeSound(); // Output: Whiskers says: Meow!
+    }
+}
+
+```
+
+- The new features in Java allow writing code and logic in interfaces but this is a bad practice
+  and should be avoided.
+
+
+- Blindly extracting interfaces doesn’t solve any problems nor is it
+  considered a best practice. 
+- If you extract an interface from every single class, you’ll end up with an explosion of interfaces that don’t necessarily
+  add any values. 
+- You should use interfaces in situations where you want
+  to decouple a class from its dependencies so you can swap these
+  dependencies. This allows building applications that are extensible and
+  testable
