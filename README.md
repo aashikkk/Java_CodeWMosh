@@ -27,6 +27,41 @@
         7. [Break and Continue Statements](#break-and-continue-statements)
         8. [For Each Loop](#for-each-loop)
    5. [Clean Coding](#clean-coding)
+   6. [Debugging and Deploying Applications](#debugging-and-deploying-applications)
+      1. [Type of Errors](#types-of-errors)
+      2. [Packaging Java Applications](#packaging-java-applications)
+
+2. [Object Oriented Programming](#object-oriented-programming)
+    1. [Classes and Objects](#classes-and-objects)
+    2. [Encapsulation](#encapsulation)
+    3. [Getters and Setters](#getters-and-setters)
+    4. [Abstraction](#abstraction)
+       1. [Constructors](#constructors)
+       2. [Method Overloading](#method-overloading)
+       3. [Constructor Overloading](#constructor-overloading)
+       4. [Static Members](#static-members)
+       5. [Notes](#notes)
+    5. [Inheritance](#inheritance)
+       1. [The Object Class](#the-object-class)
+       2. [Constructor and Inheritance](#constructor-and-inheritance)
+       3. [Access Modifiers](#access-modifiers)
+       4. [Method Overriding](#method-overriding)
+       5. [Upcasting and Downcasting](#upcasting-and-downcasting)
+       6. [Comparing Objects](#comparing-objects)
+       7. [Polymorphism](#polymorphism)
+       8. [Abstract Classes and Methods](#abstract-classes-and-methods)
+       9. [Final Classes and Methods](#final-classes-and-methods)
+       10. [Deep Inheritance Hierarchies](#deep-inheritance-hierarchies)
+       11. [Summary](#summary)
+    6. [Interfaces](#interfaces)
+       7. [Creating Interfaces](#creating-interface)
+       8. [Dependency Injection](#dependency-injection)
+          9. [Constructor Injection](#constructor-injection)
+          10. [Setter Injection](#setter-injection)
+          11. [Method Injection](#method-injection)
+       12. [Interface Segregation Principle](#interface-segregation-principle)
+
+
 
 
 # Fundamentals
@@ -37,10 +72,10 @@
 
 **Method** - A function that is a part of the class
 
-![img.png](imgs/img.png)
+![img.png](img.png)
 
 ### How Java Code executed
-![img_1.png](imgs/img_1.png)
+![img_1.png](img_1.png)
 
 Java code execution involves several steps:
 
@@ -66,7 +101,7 @@ JDK = JRE + Development Tools
 JRE = JVM + Libraries
 ```
 
-![img_2.png](imgs/img_2.png)
+![img_2.png](img_2.png)
 
 Java is platform-independent because of the Java Virtual Machine (JVM). Here is a brief explanation:
 
@@ -83,9 +118,9 @@ javac Main.java
 java Main
 ```
 
-![img_3.png](imgs/img_3.png)
+![img_3.png](img_3.png)
 
-![img.png](imgs/img_12.png)
+![img.png](img_12.png)
 
 ## Types
 1. Variables and constants
@@ -107,7 +142,7 @@ public class Main {
 ```
 
 ###  Primitive Types
-![img_5.png](imgs/img_5.png)
+![img_5.png](img_5.png)
 Java has several primitive types, which are the most basic data types in the language. These types represent simple values like numbers, characters, and booleans. Here are the eight primitive types in Java:
 1. **byte**: 8-bit integer
 2. **short**: 16-bit integer
@@ -119,7 +154,7 @@ Java has several primitive types, which are the most basic data types in the lan
 8. **boolean**: true or false
 
 
-![img_6.png](imgs/img_6.png)
+![img_6.png](img_6.png)
 
 ```java
 public class Main {
@@ -134,7 +169,7 @@ public class Main {
 ```
 
 ### Reference Types
-![img_7.png](imgs/img_7.png)
+![img_7.png](img_7.png)
 
 - When declare primitive types, we don't need to allocate memory. Memory is allocated automatically by Java (JRE).
 - When dealing with reference types, we should always allocate memory. Now we don't have to release this memory, Java JRE will take care of it.
@@ -177,7 +212,7 @@ public class Example {
 In Java, you always define functions as methods within a class.
 
 ### Primitive vs Reference Types
-![img_8.png](imgs/img_8.png)
+![img_8.png](img_8.png)
 
 ```java
 public static void main(String[] args) {
@@ -200,8 +235,8 @@ public static void main(String[] args) {
 }
 ```
 
-![img_9.png](imgs/img_9.png)
-![img_10.png](imgs/img_10.png)
+![img_9.png](img_9.png)
+![img_10.png](img_10.png)
 
 - Reference type copied by their reference, not by their value.
 - Primitive types copied by their value. Values are completely independent of each other.
@@ -347,7 +382,7 @@ public static void main(String[] args) {
     System.out.println(x); // 26
 }
 ```
-![img_11.png](imgs/img_11.png)
+![img_11.png](img_11.png)
 
 ### Casting
 ```java
@@ -990,6 +1025,7 @@ public class Main {
 
 -----------After Refactor--------
 ```java
+// Procedurel way - Not OOP this one. Need to refactor in OOP
 import java.text.NumberFormat;
 import java.util.Scanner;
 
@@ -1136,3 +1172,1687 @@ Packaging Java applications involves bundling your compiled code and resources i
    ```
 
 This process creates a self-contained JAR file that can be distributed and executed on any machine with a compatible JVM.
+
+# Object Oriented Programming
+
+## Getting Started
+### Programming Paradigms
+
+![img.png](img_13.png)
+1. **Procedural Programming**: Focuses on procedures or functions that operate on data.
+2. **Object-Oriented Programming (OOP)**: Focuses on objects that encapsulate data and behavior.
+3. **Functional Programming**: Focuses on functions that take input and produce output without side effects.
+4. **Event-Driven Programming**: Focuses on events that trigger actions or behaviors.
+5. **Logic Programming**: Focuses on rules and facts that define relationships and constraints.
+6. **Aspect-Oriented Programming**: Focuses on aspects or concerns that cut across multiple modules.
+
+![img_1.png](img_14.png)
+
+![img_15.png](img_15.png)
+![img_16.png](img_16.png)
+
+Depends on the **problem**, **context** and **budget**, we can choose the programming paradigm.
+
+### Benefits of OOP
+- Reduced Complexity
+- Easier Maintenance
+- Code Reuse
+- Faster Development
+
+Both functional and OOP are great, but OOP is more popular because of the benefits mentioned above.
+
+
+![img_17.png](img_17.png)
+
+## Classes
+1. Encapsulation
+2. Abstraction
+3. Constructors
+4. Getters and setters
+5. Method Overloading
+
+### Classes and Objects
+
+![img_18.png](img_18.png)
+![img_19.png](img_19.png)
+We can create multiple objects using same class.
+
+![img_20.png](img_20.png)
+![img_21.png](img_21.png)
+
+```java
+// TextBox.java
+public class TextBox {
+    public String text = "";
+
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void clear(){
+        text = "";
+    }
+}
+
+// Main.java
+
+public class Main {
+    public static void main(String[] args) {
+        var textBox1 = new TextBox();
+        textBox1.setText("Box 1");
+        System.out.println(textBox1.text.toUpperCase());
+
+        var textBox2 = new TextBox();
+        textBox2.setText("Box 2");
+        System.out.println(textBox2.text);
+    }
+}
+
+```
+
+### Memory Allocation
+
+![img_22.png](img_22.png)
+
+```java
+public static void main(String[] args) {
+    var textBox1 = new TextBox();
+    var textBox2 = textBox1;
+    textBox2.setText("Hello World");
+    System.out.println(textBox1.text);
+}
+
+```
+
+- Here textBox1 and textBox2 are pointing to the same object in memory.
+- If we change the value of textBox2, it will reflect in textBox1 as well.
+
+Deallocation
+- Java has a garbage collector that automatically deallocates memory when an object is no longer in use.
+- After the execution of the main method, the garbage collector will deallocate the memory used by the TextBox objects.
+
+### Procedural Programming
+
+```java
+ public static void main(String[] args) {
+    int baseSalary = 50_000;
+    int extraHours = 10;
+    int hourlyRate = 20;
+
+    int wage = calculateWage(baseSalary, extraHours, hourlyRate);
+    System.out.println(wage);
+}
+
+public static int calculateWage(
+        int baseSalary,
+        int extraHours,
+        int hourlyRate
+){
+    return baseSalary + (extraHours * hourlyRate);
+}
+```
+
+The provided code is procedural because it focuses on functions (or procedures) that operate on data, rather than encapsulating data and behavior within objects. In procedural programming, the data and functions are separate, and the functions operate on the data passed to them as arguments.
+
+In contrast, Object-Oriented Programming (OOP) encapsulates data and behavior within objects. In OOP, you would define a class to represent the concept of an employee or a job, and the methods to calculate the wage would be part of that class.
+
+### Encapsulation
+
+- Bundle the data and methods that operate on the data into a single unit called a class.
+
+```java
+// Employee.java
+public class Emplyee {
+    public int baseSalary;
+    public int hourlyRate;
+
+    public int calculateWage(int extraHours){
+        return baseSalary + (extraHours * hourlyRate);
+    }
+}
+
+// Main.java
+
+public static void main(String[] args) {
+    var employee = new Emplyee();
+    employee.baseSalary = 50_000;
+    employee.hourlyRate = 20;
+    int wage = employee.calculateWage(10);
+    System.out.println(wage);
+}
+
+// This code not complete yet, we still have issues
+```
+
+### Getters and Setters
+
+- What if we put -1 for baseSalary, so we have to do validation, instead of doing if validation there, we use setBasicSalary and put validation there.
+- Use IntelliJ to create getters and setters by clicking hint over `public int hourlyRate`
+
+```java
+// Employee.java
+public class Employee {
+    private int baseSalary;
+    private int hourlyRate;
+
+    public void setBaseSalary(int baseSalary){
+        if (baseSalary <= 0)
+            throw new IllegalArgumentException("Salary cannot be 0 or less");
+        this.baseSalary = baseSalary;
+    }
+
+    public int getBaseSalary(){
+        return baseSalary;
+    }
+
+    public int calculateWage(int extraHours){
+        return baseSalary + (extraHours * getHourlyRate());
+    }
+
+    public int getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public void setHourlyRate(int hourlyRate) {
+        if (hourlyRate <= 0)
+            throw new IllegalArgumentException("Hourly rate cannot be 0 or less");
+        this.hourlyRate = hourlyRate;
+    }
+}
+
+// Main.java
+public static void main(String[] args) {
+    var employee = new Employee();
+    employee.setBaseSalary(50_000);
+    employee.setHourlyRate(20);
+    int wage = employee.calculateWage(10);
+    System.out.println(wage);
+}
+```
+
+
+### Abstraction
+
+- Reduce complexity by hiding unnecessary details
+- Remote Controller example (we dont know how the transistors of remote working internally, we only know just changing the channel etc)
+- Hiding implementation details
+
+**Coupling** - the level of dependency between classes. If we change one class, it should not affect the other class.
+
+![img_23.png](img_23.png)
+
+The more coupling between classes, the more difficult it is to maintain and extend the codebase.
+
+```java
+private int getBaseSalary(){
+        return baseSalary;
+}
+
+private int getHourlyRate() {
+        return hourlyRate;
+}
+
+// Main.java
+var employee = new Employee();
+        employee.setBaseSalary(50_000);
+        employee.setHourlyRate(20);
+int wage = employee.calculateWage(10);
+        System.out.println(wage);
+
+// employee class have 3 coupling here. so inorder to reduce we are going to make public getters to private getters. so we can only see 3 methods there
+    }
+```
+
+### Reduce Coupling
+
+```java
+// Browser.java
+public class Browser {
+    public void navigate(String address){
+        // to navigate we need find ip address, then request httpReq
+        String ip = findIpAddress(address);
+        String html = sendHttpRequest(ip);
+        System.out.println(html);
+    }
+
+    private String sendHttpRequest(String ip) {
+        return "<html></html>";
+    }
+
+    private String findIpAddress(String address) {
+        return "127.0.0.1";
+    }
+
+}
+
+// Main.java
+public class Main {
+    public static void main(String[] args) {
+        var browser = new Browser();
+        browser.navigate("");
+    }
+}
+```
+
+![img_24.png](img_24.png)
+We can see only navigate, bcz that's only we need to see.
+
+
+### Constructors
+- Special method that is called when an instance of a class is created.
+- Used to initialize the object.
+- Automatically called when we create an object called default constructor. And it will initialize the fields with default values.
+- We can create our own custom constructor as well.
+- In previous example, what if the user forget to put the baseSalary and hourlyRate, where constructor comes in.
+
+
+```java
+// Employee.java
+public class Employee {
+    private int baseSalary;
+    private int hourlyRate;
+
+    public Employee(int baseSalary, int hourlyRate){
+//        this.baseSalary = baseSalary; // here we don't have validation so
+        setBaseSalary(baseSalary);
+        setHourlyRate(hourlyRate);
+    }
+
+    private void setBaseSalary(int baseSalary){
+        if (baseSalary <= 0)
+            throw new IllegalArgumentException("Salary cannot be 0 or less");
+        this.baseSalary = baseSalary;
+    }
+
+    private int getBaseSalary(){
+        return baseSalary;
+    }
+
+    public int calculateWage(int extraHours){
+        return baseSalary + (extraHours * getHourlyRate());
+    }
+
+    private int getHourlyRate() {
+        return hourlyRate;
+    }
+
+    private void setHourlyRate(int hourlyRate) {
+        if (hourlyRate <= 0)
+            throw new IllegalArgumentException("Hourly rate cannot be 0 or less");
+        this.hourlyRate = hourlyRate;
+    }
+}
+
+// Main.java
+public class Main {
+    public static void main(String[] args) {
+        var employee = new Employee(50_000, 20);
+        int wage = employee.calculateWage(10);
+        System.out.println(wage);
+    }
+}
+
+```
+
+### Method Overloading
+
+- Defining multiple methods with the same name but different parameters.
+- Java will automatically determine which method to call based on the arguments passed.
+- In prev example, what if we don't want to pass the extraHours, so we can create another method with same name but different parameters.
+
+```java
+// Employee.java
+public int calculateWage(int extraHours){
+        return baseSalary + (extraHours * getHourlyRate());
+    }
+
+    // here don't need to overload the method, just call the method with 0 since it's the simple case
+    public int calculateWage(){
+//        return baseSalary;
+        return calculateWage(0);
+    }
+```
+
+### Constructor overloading
+
+- Ctrl + D - Duplicate Code
+- Ctrl + B - Go to Declaration (Navigate to the method)
+- Ctrl + P - Parameter Info
+
+```java
+// Employee.java
+
+// M1
+public Employee(int baseSalary){
+    setBaseSalary(baseSalary);
+    setHourlyRate(0);
+}
+
+// M2
+// this is a reference to the current Object.
+// reusing logic from another constructor (2nd constructor)
+public Employee(int baseSalary){
+    this(baseSalary, 0);
+}
+
+public Employee(int baseSalary, int hourlyRate){
+    setHourlyRate(hourlyRate);
+    setBaseSalary(baseSalary);
+}
+
+```
+
+### Static Members
+
+- In OOP, we have instance members and static members.
+- Instance members belong to an object/instance, whereas static members belong to the class.
+- Static members are shared among all instances of a class.
+- Static members are accessed using the class name, not the object reference.
+- Static members are initialized when the class is loaded into memory and are destroyed when the class is unloaded.
+- We use static, where value is independent of the object state.
+
+like the concept `Employee.numberOfEmployees`
+
+```java
+// Employee.java
+
+public static int numberOfEmployees;
+
+// M2
+// reusing logic from another constructor (2nd constructor)
+public Employee(int baseSalary){
+    this(baseSalary, 0);
+}
+
+public Employee(int baseSalary, int hourlyRate){
+    setHourlyRate(hourlyRate);
+    setBaseSalary(baseSalary);
+    numberOfEmployees++;
+}
+
+public static void printNumberOfEmployees() {
+    System.out.println(numberOfEmployees);
+
+    // if we need to access calculateWage, we cannot use directly here
+//       new Employee().calculateWage()
+
+}
+
+// Main.java
+public static void main(String[] args) {
+    var employee = new Employee(50_000, 20);
+    var employee2 = new Employee(50_000);
+//    System.out.println(Employee.numberOfEmployees); // 2
+    Employee.printNumberOfEmployees();
+    
+    
+//    Integer.parseInt() // static method
+}
+
+```
+
+### NOTES
+
+In Java, memory is divided into two main areas: the stack and the heap.
+
+### Stack
+- **Purpose**: The stack is used for static memory allocation and the execution of threads.
+- **Storage**: It stores primitive data types (e.g., int, char) and references to objects.
+- **Lifetime**: Variables stored in the stack are short-lived and are automatically deallocated when the method call ends.
+- **Access**: Stack memory is accessed in a last-in, first-out (LIFO) manner.
+- **Size**: The size of the stack is limited and determined at runtime.
+
+### Heap
+- **Purpose**: The heap is used for dynamic memory allocation for Java objects and JRE classes.
+- **Storage**: It stores objects and arrays.
+- **Lifetime**: Objects in the heap have a longer lifetime and are managed by the garbage collector.
+- **Access**: Heap memory is accessed via references stored in the stack.
+- **Size**: The size of the heap is larger and can grow as needed, limited by the available memory.
+
+### Example
+```java
+public class Example {
+    public static void main(String[] args) {
+        int x = 10; // Stored in stack
+        Example obj = new Example(); // obj reference stored in stack, actual object stored in heap
+    }
+}
+```
+
+In this example:
+- The variable `x` is stored in the stack.
+- The reference `obj` is stored in the stack, but the actual `Example` object is stored in the heap.
+
+
+**Class** - blueprint or template for creating objects.
+
+**Object** -  instance of a class
+
+**Instantiating** means creating an Object OR instance of a class: `new
+Customer()`
+
+**Encapsulation** - bundle the data and operations on the data inside a single unit (class). 
+
+**Abstraction** - should reduce complexity by hiding the unnecessary implementation details. implementation details. As a metaphor, think of the remote control of 
+a TV. You don't need to know how the remote control works internally, you just need to know how to use it.  our objects to be like our remote controls.
+
+**Coupling** - the level of dependency between software entities (eg classes).
+
+**Constructors** - Constructors are called when we instantiate our class. We use them
+to initialize our objects. Initialization means putting an object into an
+early or initial state (eg giving it initial values).
+
+**Method overloading** - Method overloading means declaring a method with the same name
+but with different signatures. The number, type and order of its
+parameters will be different
+
+**Static Methods** - Static methods are accessible via classes, not objects.
+
+
+#### Moving away from Static Members
+// MortgageCalc
+- We use constructor to initialize instances. But `calculator` object declared as static field. and `printMortgage` and `printPaymentSchedule` are declared as static.
+- Having too many static members is not a good practice. troublesome to maintain and test.
+  - Only for situation the place concept dealing with the single place. In real application, we need to use multiple window, where we that display each report. Each report display multiple calculater.
+- **Create property** - Getter and Setter
+- **Create read-only property** - Getter only
+
+```java
+
+// to remove the duplicate, 1. make the variable as a field (private), and initialize with constructor. this is not a good option in future, if annualInterest changes.
+// 2. extract as a private method in this class to calculate Monthly Interest
+float monthlyInterest = annualInterest / PERCENT / MONTHS_IN_YEAR; // r
+short numberOfPayments = (short) (years * MONTHS_IN_YEAR); // n
+```
+
+#### Extracting getRemainingBalance Method
+
+```java
+// MortgageReport.java
+for (short month = 1; month <= calculator.getYears() * MortgageCalculator.MONTHS_IN_YEAR; month++) {
+            double balance = calculator.calculateBalance(month);
+            System.out.println(NumberFormat.getCurrencyInstance().format(balance));
+        }
+```
+
+- Once its set to constructor, it cannot be reset
+
+```java
+// cannot be reset once is set to constructor
+    private final NumberFormat currency;
+    private MortgageCalculator calculator;
+
+    public MortgageReport(MortgageCalculator calculator) {
+        this.calculator = calculator;
+        currency = NumberFormat.getCurrencyInstance();
+    }
+
+```
+
+--- After refactoring as OOP ----
+
+```java
+// MortgageCalculator.java
+
+public class MortgageCalculator {
+    private final static byte MONTHS_IN_YEAR = 12;
+    private final static byte PERCENT = 100;
+
+    private int principal;
+    private float annualInterest;
+    private byte years;
+
+    public MortgageCalculator(byte years, float annualInterest, int principal) {
+        this.years = years;
+        this.annualInterest = annualInterest;
+        this.principal = principal;
+    }
+
+    public double calculateBalance(short numberOfPaymentsMade) {
+
+        float monthlyInterest = getMonthlyInterest(); // r
+        int numberOfPayments = getNumberOfPayments(); // n
+
+        double balance = principal
+                * (Math.pow(1 + monthlyInterest, numberOfPayments) - Math.pow(1 + monthlyInterest, numberOfPaymentsMade))
+                / (Math.pow(1 + monthlyInterest, numberOfPayments) - 1);
+
+        return balance;
+    }
+
+
+    public double calculateMortgage() {
+        float monthlyInterest = getMonthlyInterest(); // r
+        int numberOfPayments = getNumberOfPayments(); // n
+
+        double mortgage = principal
+                * (monthlyInterest * Math.pow((1 + monthlyInterest), numberOfPayments)
+                / (Math.pow((1 + monthlyInterest), numberOfPayments) - 1));
+
+        return mortgage;
+    }
+
+    public double[] getRemainingBalances(){
+        var balances = new double[getNumberOfPayments()];
+        for (short month = 1; month <= balances.length; month++) {
+            balances[month -1] = calculateBalance(month);
+        }
+        return balances;
+    }
+
+    private int getNumberOfPayments() {
+        return years * MONTHS_IN_YEAR;
+    }
+
+    private float getMonthlyInterest() {
+        return annualInterest / PERCENT / MONTHS_IN_YEAR;
+    }
+}
+
+```
+
+```java
+// MortgageReport.java
+import java.text.NumberFormat;
+
+public class MortgageReport {
+
+    // cannot be reset once is set to constructor
+    private final NumberFormat currency;
+    private MortgageCalculator calculator;
+
+    public MortgageReport(MortgageCalculator calculator) {
+        this.calculator = calculator;
+        currency = NumberFormat.getCurrencyInstance();
+    }
+
+    public void printPaymentSchedule() {
+//        calculator = new MortgageCalculator(years,annualInterest, principal);
+        System.out.println("PAYMENT SCHEDULE");
+        System.out.println("----------------");
+        for (double balance : calculator.getRemainingBalances())
+            System.out.println(currency.format(balance));
+
+    }
+
+    public void printMortgage() {
+        double mortgage = calculator.calculateMortgage();
+        String mortgageInDollar = currency.format(mortgage);
+        System.out.println();
+        System.out.println("MORTGAGE");
+        System.out.println("--------");
+        System.out.println("Monthly Payments: " + mortgageInDollar);
+        System.out.println();
+    }
+}
+
+//        for (short month = 1; month <= calculator.getYears() * MortgageCalculator.MONTHS_IN_YEAR; month++) {
+//            double balance = calculator.calculateBalance(month);
+//            System.out.println(NumberFormat.getCurrencyInstance().format(balance));
+//        }
+
+```
+
+```java
+// Console.java
+import java.util.Scanner;
+
+public class Console {
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static double readNumber(String prompt){
+        return scanner.nextDouble();
+    }
+    public static double readNumber(String prompt, double min, double max) {
+        double value;
+        while (true) {
+            System.out.print(prompt);
+            value = scanner.nextDouble();   // p
+            if (value < max && value > min)
+                break;
+
+            System.out.println("Enter a number between " + min + " and " + max);
+        }
+        return value;
+    }
+}
+
+// we don't need to expose Scanner class here, so hide the implementation details by making private.
+// also make static to use in both static methods
+```
+
+```java
+// Main.java
+public class Main {
+
+    public static void main(String[] args){
+        int principal = (int) Console.readNumber("Principal ($1K - $1M): ", 1000, 1_000_000);
+        float annualInterest = (float) Console.readNumber("Annual Interest Rate: ", 0, 30);
+        byte years = (byte) Console.readNumber("Period (Years): ", 0, 30);
+
+        var calculator = new MortgageCalculator(years, annualInterest, principal);
+
+        var report = new MortgageReport(calculator);
+        report.printMortgage();
+        report.printPaymentSchedule();
+    }
+
+}
+```
+
+## Inheritance
+1. Constructors
+2. Access Modifiers
+3. Overriding Methods
+4. Comparing Objects
+5. Polymorphism
+
+Inheritance is a fundamental concept in object-oriented programming (OOP) that allows a class to inherit properties and behaviors (methods) from another class. The class that inherits is called the **subclass** or **derived class**, and the class from which it inherits is called the **superclass** or **base class**.
+
+### Key Points:
+- **Reusability**: Inheritance promotes code reusability by allowing common properties and methods to be defined in a base class and reused in derived classes.
+- **Hierarchy**: It helps in creating a hierarchical classification of classes.
+- **Method Overriding**: Subclasses can provide specific implementations of methods that are already defined in their superclasses.
+- **Polymorphism**: Inheritance enables polymorphism, where a subclass object can be treated as an instance of its superclass.
+
+![img_25.png](img_25.png) 
+
+- **Base Class** - Parent class or superclass.
+- **Derived Class** - Child class or subclass
+- **Inheritance** - Mechanism where a new class inherits properties and behavior from an existing class.
+- **is A relationship** - A derived class is a type of the base class.
+
+```java
+// Main.java
+
+public class Main {
+    public static void main(String[] args) {
+        var control = new TextBox();
+        control.disable();
+        System.out.println(control.isEnabled());
+    }
+}
+
+// UIControl.java
+public class UIControl {
+    private boolean isEnabled = true;
+
+    public void enable(){
+        isEnabled = true;
+    }
+
+    public void disable(){
+        isEnabled = false;
+    }
+
+    public boolean isEnabled(){
+        return isEnabled;
+    }
+}
+
+// TextBox.java
+public class TextBox extends UIControl {
+    private String text = "";
+
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void clear(){
+        text = "";
+    }
+}
+```
+
+### The Object Class
+
+```java
+public static void main(String[] args) {
+    var obj = new Object();
+    obj.
+}
+```
+![img_26.png](img_26.png)
+
+```java
+    public static void main(String[] args) {
+        var Box1 = new TextBox();
+        var Box2 = Box1;
+        var Box3 = new TextBox();
+        System.out.println(Box1.hashCode()); //  1072408673-  Hashcode
+        System.out.println(Box2.hashCode()); //  1072408673 -  Hashcode
+        System.out.println(Box1.equals(Box2)); // true
+        System.out.println(Box1.equals(Box3)); // false
+        System.out.println(Box1.toString()); // TextBox@3feba861 , hashcode in Object represented in hexadecimal.
+        // This integer based on the address of this object in memory.
+        // address of this Object can get by HashFunction.
+    }
+    
+```
+
+In Java, the `Object` class is the root of the class hierarchy. Every class has `Object` as a superclass. All objects, including arrays, implement the methods of this class. Here are some key methods provided by the `Object` class:
+
+### Key Methods of the `Object` Class
+
+1. **`clone()`**: Creates and returns a copy of the object.
+2. **`equals(Object obj)`**: Indicates whether some other object is "equal to" this one.
+3. **`finalize()`**: Called by the garbage collector on an object when garbage collection determines that there are no more references to the object.
+4. **`getClass()`**: Returns the runtime class of the object.
+5. **`hashCode()`**: Returns a hash code value for the object.
+6. **`notify()`**: Wakes up a single thread that is waiting on this object's monitor.
+7. **`notifyAll()`**: Wakes up all threads that are waiting on this object's monitor.
+8. **`toString()`**: Returns a string representation of the object.
+9. **`wait()`**: Causes the current thread to wait until another thread invokes the `notify()` method or the `notifyAll()` method for this object.
+
+### Example Usage
+
+Here is an example demonstrating some of these methods:
+
+```java
+public class Example {
+    private int id;
+    private String name;
+
+    public Example(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Example example = (Example) obj;
+        return id == example.id && name.equals(example.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Example{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public static void main(String[] args) {
+        Example obj1 = new Example(1, "Object1");
+        Example obj2 = new Example(1, "Object1");
+
+        System.out.println(obj1.equals(obj2)); // true
+        System.out.println(obj1.hashCode()); // hash code of obj1
+        System.out.println(obj1.toString()); // Example{id=1, name='Object1'}
+    }
+}
+```
+
+In this example:
+- The `equals` method is overridden to compare the `id` and `name` fields.
+- The `hashCode` method is overridden to return a hash code based on the `id` and `name` fields.
+- The `toString` method is overridden to return a string representation of the object.
+
+
+### Constructor and Inheritance
+
+```java
+// UIControl.java
+public class UIControl {
+    private boolean isEnabled = true;
+
+    public UIControl() {
+        System.out.println("UIControl");
+    }
+
+    public void enable(){
+        isEnabled = true;
+    }
+
+    public void disable(){
+        isEnabled = false;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+}
+
+// TextBox.java
+public class TextBox extends UIControl {
+    private String text = "";
+
+    public TextBox() {
+        System.out.println("TextBox");
+    }
+
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void clear(){
+        text = "";
+    }
+}
+
+// Main.java
+
+public class Main {
+    public static void main(String[] args) {
+        var textBox = new TextBox();
+    }
+}
+
+// ---Output---
+// UIControl
+// TextBox
+```
+
+When we add parameter to the UIControl constructor,
+TextBox Constructor will say There is no parameterless constructor in the UIControl class.
+```java
+public UIControl(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        System.out.println("UIControl");
+    }
+```
+
+![img_27.png](img_27.png)
+because TextBox class don't know what to pass in the parameter of UIControl.
+For that we are calling super() and pass argument as true or false.
+
+```java
+public TextBox() {
+        super(true);
+        System.out.println("TextBox");
+    }
+    
+//Output for Main class
+// UIControl 
+// TextBox
+```
+
+Then it will work as expected.
+
+### Access Modifiers
+
+
+| Access Modifier | Class | Package | Subclass | World |
+|-----------------|-------|---------|----------|-------|
+| `public`        | Yes   | Yes     | Yes      | Yes   |
+| `protected`     | Yes   | Yes     | Yes      | No    |
+| (default)       | Yes   | Yes     | No       | No    |
+| `private`       | Yes   | No      | No       | No    |
+
+### Explanation:
+- **`public`**: The member is accessible from any other class.
+- **`protected`**: The member is accessible within its own package and by subclasses.
+- **(default)**: If no access modifier is specified, the member is accessible only within its own package.
+- **`private`**: The member is accessible only within its own class.
+
+
+- `private` members are not inherited by subclasses. They are only accessible within the class where they are declared.
+- `protected` is like public within the package and by its subclasses. This is kinda bad practice, because it's hard to maintain the app.
+- stay away from `protected` and `default` access modifiers.
+- stick to `public` and `private` access modifiers.
+
+### Method Overriding
+
+Method overriding occurs when a subclass provides a specific implementation for a method that is already defined in its superclass. The overridden method in the subclass should have the same name, return type, and parameters as the method in the superclass.
+
+### Key Points:
+- **Purpose**: To provide a specific implementation of a method that is already defined in the superclass.
+- **Signature**: The method in the subclass must have the same name, return type, and parameters as the method in the superclass.
+- **Annotation**: The `@Override` annotation is used to indicate that a method is being overridden. This helps to catch errors at compile time.
+
+### Example:
+
+Here is an example demonstrating method overriding:
+
+```java
+// Superclass - Object Class (java.lang)
+ 
+
+// Subclass
+public class TextBox extends UIControl {
+    private String text = "";
+
+    public TextBox() {
+        super(true);
+        System.out.println("TextBox");
+    }
+    
+    @Override
+    public String toString(){
+        return text;
+    }
+
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void clear(){
+        text = "";
+    }
+
+}
+
+
+// Main class to test the overriding
+public class Main {
+    public static void main(String[] args) {
+        var textBox = new TextBox();
+        textBox.setText("Hello, World!");
+        System.out.println(textBox.toString());
+    }
+}
+```
+
+In this example:
+- The `toString` method is defined in the `Object` class.
+- The `TextBox` class overrides the `toString` method to provide a specific implementation.
+- When the `toString` method is called on an instance of `TextBox`, the overridden method in the `TextBox` class is executed.
+
+### Upcasting and Downcasting
+
+![img_28.png](img_28.png)
+
+```java
+
+public class Main {
+    public static void main(String[] args) {
+        var control = new UIControl(true);
+        var textBox = new TextBox();
+        show(textBox);  // Upcasting, textBox is technically a UIControl (derived from UIControl)
+        // we can give UIControl or any derivatives of UIControl to show method
+
+    }
+
+    public static void show(UIControl control){
+//        control. //  can only see control methods
+        if (control instanceof TextBox) {
+            TextBox textBox = (TextBox) control;  // Explicitly casting - Downcasting
+            textBox.setText("Hello, World!");
+        }
+        System.out.println(control);
+    }
+}
+
+// UIControl - Base
+// TextBox - Subclass
+
+// Every Text is a UIControl, but not every UIControl is a TextBox
+```
+
+
+### Comparing Objects
+
+- **`==`**: Compares the references of two objects. It checks if the two references point to the same object in memory.
+- **`equals`**: Compares the contents of two objects. It checks if the two objects have the same values for their fields.
+
+Equals
+1. Check if the two objects are same
+2. Check if the object is instance of an Object
+3. if the same instance, check if the fields are same. (Convert to Point and check )
+
+HashCode
+1. return Objects.hash(point1, point2)
+
+- Can generate `equals and hashCode` using generators
+```java
+// Point.java
+import java.util.Objects;
+
+public class Point {
+    private int x;
+    private int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Point point)) return false;
+        return x == point.x && y == point.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+    //    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj)
+//            return true;
+//
+//        if (!(obj instanceof Point))
+//            return false;
+//
+//        var other = (Point) obj;
+//        return other.x == x && other.y == y;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(x, y);
+//    }
+}
+
+// Main.java
+public class Main {
+    public static void main(String[] args) {
+        var point1 = new Point(1,2);
+        var point2 = new Point(1,2);
+        System.out.println(point1.equals(point2));
+//        System.out.println(point1 == point2); // address of the memory not values
+    }
+}
+
+```
+
+### `instanceof` vs `getClass` in `equals` Method
+
+#### `instanceof`:
+- **Purpose**: Checks if the object is an instance of a specific class or its subclasses.
+- **Usage**: Allows for polymorphic behavior, meaning it can handle objects of the specified class and its subclasses.
+- **Example**:
+  ```java
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof Point)) return false;
+      Point point = (Point) o;
+      return x == point.x && y == point.y;
+  }
+  ```
+
+#### `getClass`:
+- **Purpose**: Checks if the object is exactly of the specified class.
+- **Usage**: Ensures that the objects being compared are of the exact same class, not allowing subclass comparisons.
+- **Example**:
+  ```java
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Point point = (Point) o;
+      return x == point.x && y == point.y;
+  }
+  ```
+
+### Summary
+- **`instanceof`**: More flexible, allows comparison with subclasses.
+- **`getClass`**: Stricter, only allows comparison with the exact same class.
+
+### Polymorphism
+
+![img_29.png](img_29.png)
+
+```java
+// UIControl.java
+public class UIControl {
+    private boolean isEnabled = true;
+
+    public void render(){
+    }
+
+    public void enable(){
+        isEnabled = true;
+    }
+
+    public void disable(){
+        isEnabled = false;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+}
+
+
+// TextBox.java
+public class TextBox extends UIControl {
+    private String text = "";
+    
+    @Override
+    public void render() {
+        System.out.println("Render TextBox");
+    }
+
+    @Override
+    public String toString(){
+        return text;
+    }
+
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void clear(){
+        text = "";
+    }
+}
+
+// CheckBox.java
+public class CheckBox extends UIControl{
+    @Override
+    public void render() {
+        System.out.println("Render CheckBox");
+    }
+}
+
+// Main.java
+
+public class Main {
+    public static void main(String[] args) {
+        // we have bunch of controls in Array
+        UIControl[] controls = { new TextBox(), new CheckBox()};
+        for (var control: controls)
+            control.render();
+    }
+}
+
+
+//for (var control: controls){
+//        // if control is TextBox
+//        //    renderTextBox
+//        // if control is CheckBox
+//        //    renderCheckBox
+//        // this is grow and will be fat
+//        }
+
+// Instead of doing that, simply call render of their own.
+// This is Polymorphism in action.
+
+/*
+ * ---Output---
+ * Render TextBox
+ * Render CheckBox
+ * */
+```
+
+
+### Abstract Classes and Methods
+
+- **Abstract Class**: A class that cannot be instantiated and is used as a base class for other classes.
+
+Imagine a situation like this
+```java
+public class Main {
+    public static void main(String[] args) {
+        UIControl[] controls = { new UIControl(), new TextBox(), new CheckBox()};
+        for (var control: controls)
+            control.render();
+    }
+}
+
+```
+
+Here what is UIControl???
+It's not a real thing,  We cannot use render UIControl. it's just a concept.So we can make it as abstract class.
+Abstract class means we cannot create an instance of it. but can declare.
+
+So,
+
+```java
+// UIControl.java
+public abstract class UIControl {
+    private boolean isEnabled = true;
+    
+    public abstract void render();
+
+    public void enable(){
+        isEnabled = true;
+    }
+
+    public void disable(){
+        isEnabled = false;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+}
+ 
+```
+
+![img_30.png](img_30.png) Now, cannot instantiate UIControl.
+
+![img_31.png](img_31.png)
+
+If I dont have a render method in CheckBox, it will give an error. So we have to implement the render method in CheckBox or make abstract class.
+SO, make sure to implement the render method in CheckBox.
+You can only extend Abstract Classes.
+
+
+### Final Classes and Methods
+
+- **Final Class**: A class that cannot be instantiated
+- It prevents us from using Inheritance, Polymorphism, and Method Overriding.
+
+In Java, the `final` keyword can be used to define classes and methods that cannot be extended or overridden.
+
+#### Final Classes
+A final class cannot be subclassed. This is useful when you want to prevent inheritance for security reasons or to ensure the integrity of the class. We don't use this. bad practice. When you do, make sure you know 100% What you are doing.
+
+```java
+public final class FinalClass {
+    // Class implementation
+}
+```
+
+![img_33.png](img_33.png)
+
+Ex: We cannot extend String class. String is immutable. So, that is as final Class.
+
+![img_32.png](img_32.png) - String is final class.
+
+#### Final Methods
+A final method cannot be overridden by subclasses. This is useful when you want to prevent a method from being modified in any subclass.
+
+```java
+public class BaseClass {
+    public final void finalMethod() {
+        // Method implementation
+    }
+}
+```
+
+![img_34.png](img_34.png)
+
+![img_35.png](img_35.png) - You can't see the enable method
+
+
+### Deep Inheritance Hierarchies
+
+Don't create deep inheritance hierarchies. It's a bad practice. It makes the code difficult to maintain and understand. Instead, use composition over inheritance.
+
+![img_36.png](img_36.png)
+If there any changes in Entity class, it will affect all the classes. So, it has to recomplie all the classes. also tight coupling.
+
+![img_37.png](img_37.png)
+When lastlogin common with Instructor and Student,
+
+### Multiple Inheritance
+![img_38.png](img_38.png)
+
+Diamond Problem
+![img_39.png](img_39.png) 
+
+That's why Java doesn't support multiple inheritance. Instead, it supports multiple interfaces.
+
+### Summary
+
+- The `super` keyword is a reference to the base or parent class. We can
+use it to access the members (fields and methods) or call the
+constructors of the base class. In contrast, the `this` keyword returns a
+reference to the current object.  
+
+
+- Method overriding means changing the implementation of an
+  inherited method in a subclass. For example, we can override the
+  equals() or hashCode() methods of the Object class. Method
+  overloading means declaring a method with different signatures
+  (different number, type and order of parameters).  
+- The `@Override` annotation is used to indicate that a method is
+  being overridden. It helps the compiler catch errors at compile time.  It signals the Java compiler that we’re overriding a method in the
+  base class and this helps the compiler check our code for correctness. It
+  will ensure the signature of the method in the subclass matches the on
+  declared in the base class. Also, if we remove this method from the base
+  class, the compiler will let us know and we can remove the method in
+  the subclass as well. 
+
+
+- `instanceof` - It tells us if an object is an instance of a class. We use it before
+  casting an object to a different type to make sure we don’t get a casting
+  exception.
+
+
+- **Encapsulation**: bundling the data and operations on the data inside
+  a single unit (class).  
+- **Abstraction**: reducing complexity by hiding unnecessary details
+  (metaphor: the implementation detail of a remote control is hidden
+  from us. We only work with its public interface.)  
+- **Inheritance**: a mechanism for reusing code.  
+- **Polymorphism**: a mechanism that allows an object to take many
+  forms and behave differently. This will help us build extensible
+  applications. 
+
+
+- An **abstract class** is a partially-implemented (half-cooked) class. We
+  cannot instantiate them. But we use them to share some common code
+  across their subclasses. 
+
+
+- Can we have an abstract class without any abstract methods?
+  Yes, we can have an abstract class without any abstract methods. But if we
+  mark a method as abstract, we should mark the class as abstract as well. 
+
+
+- Final Class -  Final classes cannot be inherited. We use them when we’ve made
+  certain assumptions about a class and we want to prevent other classes
+  extending our class and break those assumptions. 
+
+
+- The diamond problem happens in languages that support multiple
+  inheritance. If two classes (B, C) derive from A and are also the parents
+  of another class (D), we see a diamond. If the top class (A) declares a
+  method (eg toString) and its children (B and C) override this method,
+  it’s not clear which implementation will be inherited by D.  
+
+
+## Interfaces
+- What interfaces are
+- Why we need them
+- How to use them 'properly'
+- Dependency Injection
+
+- We use interface to build loosely-coupled, extensible, testable applications.
+
+![img_40.png](img_40.png)
+If A class is dependent on B class, then it's tightly coupled. If there any changes in B, have to change in A as well. If not any breaking changes there, it has to recompile all the classes. 
+This is not an issue in small applications. But in Large applications, it's a big issue.
+
+
+![img_41.png](img_41.png) - In Interface, If there any changes in B, it will not affect A. 
+
+Abstract - hide the implementation details. 
+Interface - hide the implementation details and also hide the dependencies.
+
+- Only define method declaration. No implementation.
+
+![img_42.png](img_42.png)
+
+#### Tightly coupled code
+
+```java
+// TaxCalculator2018.java
+public class TaxCalculator2018 {
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    public double calculateTax() {
+        return taxableIncome * 0.4;
+    }
+}
+
+// TaxReport.java
+public class TaxReport {
+    private TaxCalculator2018 calculator;
+
+    public TaxReport() {
+        calculator = new TaxCalculator2018(100_000);
+    }
+
+    public void show() {
+        var tax = calculator.calculateTax();
+        System.out.println(tax);
+    }
+}
+
+// if we add another paramter to taxCalculator, it will broke
+// if we change the tax percentage, it will recompile
+```
+
+### Creating Interface
+
+```java
+// TaxCalculator.java
+public interface TaxCalculator {
+    double calculateTax();
+}
+
+// TaxCalculator2018.java
+public class TaxCalculator2018 implements TaxCalculator {
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    @Override
+    public double calculateTax() {
+        return taxableIncome * 0.4;
+    }
+}
+```
+
+### Dependency Injection
+
+Our classes should not instantiate their dependencies. Instead, they should be passed in. This is called dependency injection.
+ 
+In TaxReport.java, we instantiate Taxcalulator
+![img_44.png](img_44.png)
+
+**Dependency Injection** principal says Should not worry about creating about calculator Object. We should only use it.
+1. creating calculator object 
+2. using it
+
+are two different concerns. That's what we call **separation of concerns**.
+
+![img_43.png](img_43.png)
+1. Constructor Injection
+2. Setter Injection
+3. Method Injection
+
+### Constructor Injection
+
+We don't need TaxReport class depend on concrete implementation of TaxCalculator. Instead, we can depend on the interface.
+
+Poormans Dependency Injection—We can pass the object in the constructor. When we pass multiple dependencies, where we use Dependency Injection Framework—Spring...
+
+Poormans Dependency Injection refers to a simple way of injecting dependencies into a class without using a DI framework. This can be done using constructor injection, setter injection, or method injection.
+
+In this approach, the dependency is passed to the class via its constructor. This ensures that the dependency is provided when the class is instantiated.
+
+Here is an example using the provided context:
+
+#### `TaxCalculator.java`
+```java
+public interface TaxCalculator {
+    double calculateTax();
+}
+```
+
+#### `TaxCalculator2018.java`
+```java
+public class TaxCalculator2018 implements TaxCalculator {
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    @Override
+    public double calculateTax() {
+        return taxableIncome * 0.4;
+    }
+}
+```
+
+#### `TaxReport.java`
+```java
+public class TaxReport {
+    private TaxCalculator calculator;
+
+    // Constructor Injection
+    public TaxReport(TaxCalculator calculator) {
+        this.calculator = calculator;
+    }
+
+    public void show() {
+        var tax = calculator.calculateTax();
+        System.out.println(tax);
+    }
+}
+```
+
+#### `Main.java`
+```java
+public class Main {
+    public static void main(String[] args) {
+        TaxCalculator calculator = new TaxCalculator2018(100_000);
+        TaxReport report = new TaxReport(calculator);
+        report.show();
+    }
+}
+```
+
+In this example:
+- The `TaxReport` class does not instantiate the `TaxCalculator2018` class directly.
+- Instead, it receives an instance of `TaxCalculator` through its constructor, adhering to the Dependency Injection principle.
+
+
+### Setter Injection
+
+In Setter Injection, we use setter methods to inject dependencies into a class. This allows us to set the dependencies after the class has been instantiated. 
+
+In a nutshell, can change the dependency class throughout the lifetime of application.
+
+So, if you want to change the dependency class throughout the lifetime of the application, you can use Setter Injection. otherwise Constructor injection is common approach.
+
+Here is an example using the provided context:
+
+#### `TaxCalculator.java`
+```java
+public interface TaxCalculator {
+    double calculateTax();
+}
+```
+
+#### `TaxCalculator2018.java`
+```java
+public class TaxCalculator2018 implements TaxCalculator {
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    @Override
+    public double calculateTax() {
+        return taxableIncome * 0.4;
+    }
+}
+```
+
+#### `TaxReport.java`
+```java
+public class TaxReport {
+    private TaxCalculator calculator;
+    
+    public TaxReport(TaxCalculator calculator) {
+        this.calculator = calculator;
+    }    
+    
+    public void show() {
+        var tax = calculator.calculateTax();
+        System.out.println(tax);
+    }
+    
+    // Setter Injection
+    public void setCalculator(TaxCalculator calculator) {
+        this.calculator = calculator;
+    }
+    
+}
+```
+
+#### `Main.java`
+```java
+public class Main {
+    public static void main(String[] args) {
+        var calculator = new TaxCalculator2018(100_000);
+        var report = new TaxReport();
+        report.show(); // 40,000
+        
+        report.setCalculator(new TaxCalculator2019());
+        report.show(); // 0.00
+    }
+}
+```
+
+### Method Injection
+
+
+Method Injection is another way to inject dependencies into a class. Instead of passing the dependency through the constructor or setter, you provide the dependency as a parameter to the method that needs it.
+
+Here is an example using the provided context:
+
+#### `TaxCalculator.java`
+```java
+public interface TaxCalculator {
+    double calculateTax();
+}
+```
+
+#### `TaxCalculator2018.java`
+```java
+public class TaxCalculator2018 implements TaxCalculator {
+    private double taxableIncome;
+
+    public TaxCalculator2018(double taxableIncome) {
+        this.taxableIncome = taxableIncome;
+    }
+
+    @Override
+    public double calculateTax() {
+        return taxableIncome * 0.4;
+    }
+}
+```
+
+
+#### `TaxCalculator2019.java`
+
+```java
+public class TaxCalculator2019 implements TaxCalculator{
+    @Override
+    public double calculateTax() {
+        return 0;
+    }
+}
+
+```
+
+#### `TaxReport.java`
+```java
+public class TaxReport {
+    
+    public void show(TaxCalculator calculator) {
+        var tax = calculator.calculateTax();
+        System.out.println(tax);
+    }
+}
+```
+
+#### `Main.java`
+```java
+public class Main {
+    public static void main(String[] args) {
+        var calculator = new TaxCalculator2018(100_000);
+        var report = new TaxReport();
+        report.show(calculator);
+        report.show(new TaxCalculator2019());
+    }
+}
+```
+
+In this example:
+- The `TaxReport` class does not store the `TaxCalculator` dependency.
+- Instead, the `show` method receives the `TaxCalculator` instance as a parameter, adhering to the Method Injection principle.
+
+When designing `interface`, make it small or light weight, don't make it as fat.
+
+
+### Interface Segregation Principle
+
+Divide big interfaces into smaller ones. This is called the Interface Segregation Principle.
