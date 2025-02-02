@@ -6090,6 +6090,217 @@ We can compose this interface to build most complex functions
 
 # Streams
 
+![img_67.png](img_67.png)
+
+A sequence of elements supporting sequential and parallel aggregate operations. Streams do not store data, they operate on the source data structure (such as a collection) to produce a result.
+
+![img_68.png](img_68.png)
+
+SQL is a example for declarative programming, where we define what we want, not how to do it. Streams are similar to SQL, where we define what we want to do with the data, not how to do it.
+
+**Streams**—To process a collection of data in a declarative way
+
+![img_69.png](img_69.png)
+
+```java
+// StreamsDemo.java
+package streams;
+
+import java.util.List;
+
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 15),
+                new Movie("c", 20)
+        );
+
+        // Imperative Programming
+        int count = 0;
+        for (var movie : movies)
+            if (movie.getLikes() > 10)
+                count++;
+
+        // Declarative (Functional) Programming
+        var count2 = movies.stream()
+                .filter(movie -> movie.getLikes() > 10)
+                .count();
+
+    }
+}
+
+// Movie.java
+package streams;
+
+public class Movie {
+    private String title;
+    private int likes;
+
+    public Movie(String title, int likes) {
+        this.title = title;
+        this.likes = likes;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+}
+
+```
+
+
+### Creating Streams
+
+![img_70.png](img_70.png)
+
+Every class that implements the `Collection` interface has a `stream` method that returns a stream of elements from the collection. The `stream` method is used to create a stream from a collection.
+
+```java
+import java.util.stream.Stream;
+
+public class CreatingStreamsDemo {
+    public static void show(){
+
+        // M2 Another way to create a stream - infinite
+        Stream.iterate(1, n-> n+1)
+                .limit(10)
+                .forEach(n -> System.out.println(n));
+
+
+//        // M1 -  Arbitary no of objects
+////        Stream.of() // to create a stream of objects
+//        var stream = Stream.generate(() -> Math.random());
+//        stream
+//                .limit(3)
+//                .forEach(System.out::println);
+
+//        // From Arrays
+//        int[] number = {1, 2, 3};
+//        Arrays.stream(number)
+//                .forEach(n -> System.out.println(n));
+    }
+}
+
+```
+
+### Mapping Elements
+![img_71.png](img_71.png)
+
+```java
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 15),
+                new Movie("c", 20)
+        );
+
+        movies.stream()
+//                .mapToInt(movie -> movie.getLikes()) // IntStream
+                .map(movie -> movie.getTitle())
+                .forEach(name -> System.out.println(name));
+
+    }
+}
+```
+
+```java
+import java.util.List;
+import java.util.stream.Stream;
+
+public class StreamsDemo {
+    public static void show(){
+        var stream = Stream.of(List.of(1,2,3), List.of(4,5,6));
+        stream
+                .flatMap(list -> list.stream())
+                .forEach(n -> System.out.println(n)); // 1 2 3 4 5 6
+
+
+//        stream
+//                .forEach(list -> System.out.println(list)); // [1, 2, 3] [4, 5, 6]
+    }
+}
+
+```
+
+###  Filtering Elements
+
+![img_72.png](img_72.png)
+
+Filtering elements in a stream allows you to select only the elements that match a given condition. This is achieved using the `filter` method of the `Stream` interface.
+
+```java
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 15),
+                new Movie("c", 20)
+        );
+
+        Predicate<Movie> isPopular = m -> m.getLikes() > 10;
+
+        movies.stream()
+                .filter(isPopular)
+                .forEach(m -> System.out.println(m.getTitle()));
+
+    }
+}
+
+```
+
+### Slicing Streams
+
+![img_73.png](img_73.png)
+
+```java
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 15),
+                new Movie("c", 20)
+        );
+
+        // 1000 movies
+        // 10 movies per page
+        // 3rd page
+        // skip(20) = skip( (page - 1) x pageSize )
+        // limit(10) = limit(pageSize)
+
+        movies.stream()
+                .skip(2)
+                .forEach(m -> System.out.println(m.getTitle())); // c
+    }
+}
+```
+The ‘takeWhile’ method on Java Stream API is used for extracting elements from a stream based on specified conditions. The 'takeWhile' is particularly useful when we want to limit the elements taken from the beginning of a stream until a certain condition becomes false.
+
+The dropWhile method will skip elements as long as the condition is true. Once it encounters an element where the condition is false, it stops skipping and includes the rest of the elements in the stream
+```java
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 30),
+                new Movie("c", 20)
+        );
+
+//        movies.stream()
+//                .takeWhile(m -> m.getLikes() < 30) // it will stop when it finds the first movie with likes >= 30
+//                .forEach(m -> System.out.println(m.getTitle()));
+//
+        movies.stream()
+                .dropWhile(m -> m.getLikes() < 30) // it will skip that matches the criteria and takes the rest
+                .forEach(m -> System.out.println(m.getTitle()));
+    }
+}
+```
 
 
 [//]: # ()
