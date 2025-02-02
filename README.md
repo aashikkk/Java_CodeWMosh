@@ -104,6 +104,20 @@
       10. [Summary](#summary---collection)
    4. [Lambda Expressions and Functional Interface](#lambda-expressions-and-functional-interfaces)
       1. [Functional Interfaces](#functional-interfaces)
+      2. [Variable Capture](#variable-capture)
+      3. [Method References](#method-reference)
+      4. [Built in Functional Interfaces](#built-in-functional-interfaces)
+      5. [Consumer Interface](#consumer-interface)
+      6. [Chaining Consumers](#chaining-consumers)
+      7. [Supplier Interface](#supplier-interface)
+      8. [Function Interface](#function-interface)
+      9. [Composing Functions](#composing-functions)
+      10. [Predicate Interface](#predicate)
+      11. [Combining Predicates](#combining-predicate-)
+      12. [Binary Operator Interface](#binary-operator-interface)
+      13. [Unary Operator Interface](#unary-operator)
+      14. [Summary](#summary---lambdas)
+   5. [Streams](#streams)
    
 
 
@@ -5524,6 +5538,559 @@ Map - The `Map` interface represents a collection of key-value pairs. It does no
 ## Functional Interfaces
 
  An interface that contains **single abstract method**. It can have multiple default or static methods, but only one abstract method.
+
+```java
+// LambdasDemo.java
+package lambdas;
+
+public class LambdasDemo {
+    public static void show() {
+        greet(new ConsolePrinter());
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+
+// ConsolePrinter.java
+package lambdas;
+
+public class ConsolePrinter implements Printer{
+    @Override
+    public void print(String message) {
+        System.out.println(message);
+    }
+}
+
+
+// Printer.java
+package lambdas;
+
+public interface Printer {
+    void print(String message);
+}
+```
+#### Anonymous Inner class
+We are only using once the ConsolePrinter class, So we can have anonymous inner class. But In Java 8, the better method came, lambda expression to make it more concise. 
+
+```java
+// LambdasDemo.java
+// We are just only using Printer Interface
+package lambdas;
+
+public class LambdasDemo {
+    public static void show() {
+        greet(new Printer() {
+            @Override
+            public void print(String message) {
+                System.out.println(message);
+            }
+        });
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+```
+
+#### With Lambda expression,
+```java
+package lambdas;
+
+public class LambdasDemo {
+    public static void show() {
+        greet(message -> System.out.println(message));
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+
+/*
+*       // Base
+        greet((message) -> {
+            System.out.println(message);
+        });
+
+        // V2
+        * greet(message -> System.out.println(message));
+        *
+        * Can be stored in a variable too,
+        Printer printer = message -> System.out.println(message);
+        greet(printer);
+        * 
+        * 
+        // V3
+        greet(System.out::println); // Method reference
+*
+* */
+```
+
+### Variable capture
+
+The difference between inner class and lambda expression is that lambda expression can capture variables from the enclosing scope. 
+`this` referencing an enclosing object, while in inner class, `this` referencing current instance of the anonymous inner class object.
+
+```java
+package lambdas;
+
+public class LambdasDemo {
+    public static String prefix = "-";
+
+    public static void show() {
+//        String prefix = "-";
+        greet(message -> System.out.println(message));
+    }
+ 
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+
+/*
+*       public static void show() {
+            String prefix = "-";
+            greet(message -> System.out.println(prefix + message));
+        }
+*
+*       // V2
+*       public static String prefix = "-";
+
+        public static void show() {
+            greet(message -> System.out.println(prefix + message));
+        }
+        * 
+        // V3
+        public String prefix = "-";
+
+        public void show() {
+            greet(message -> System.out.println(this.prefix + message)); // this represents current instance of the LambdasDemo class
+    }
+ 
+      
+* */
+```
+
+## Method Reference
+
+Method references in lambda expressions provide a way to refer to methods directly by their names. They are a shorthand notation of a lambda expression to call a method. Method references can be used to refer to a static method, an instance method, or a constructor.
+
+### Types of Method References
+
+1. **Static Method Reference**: `ClassName::staticMethodName`
+2. **Instance Method Reference of a Particular Object**: `instance::instanceMethodName`
+3. **Instance Method Reference of an Arbitrary Object of a Particular Type**: `ClassName::instanceMethodName`
+4. **Constructor Reference**: `ClassName::new`
+
+
+Ex1: Instance Method Reference of an Arbitrary Object of a Particular Type
+```java
+package lambdas;
+
+public class LambdasDemo {
+    public static void show() {
+        greet(message -> System.out.println(message));
+        greet(System.out::println); // Method reference
+
+        // Class/Object::method
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+```
+
+Ex2: Static Method
+```java
+public class LambdasDemo {
+    public static void print(String message) {}
+
+    public static void show() {
+        greet(message -> print(message));
+        greet(LambdasDemo::print);
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+```
+
+Ex3: Instance Method ref of Particular Object
+```java
+public class LambdasDemo {
+    public void print(String message) {}
+
+    public static void show() {
+        var demo = new LambdasDemo();
+        greet(message -> demo.print(message));
+        greet(demo::print);
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+```
+
+Ex4: Constructor Reference
+
+```java
+public class LambdasDemo {
+    public LambdasDemo(String message) {
+    }
+
+    public static void show() {
+        greet(message -> new LambdasDemo(message));
+        greet(LambdasDemo::new);
+    }
+
+    public static void greet(Printer printer){
+        printer.print("Hello World");
+    }
+}
+```
+
+
+### Example
+
+Here is an example demonstrating different types of method references:
+
+#### Static Method Reference
+
+```java
+import java.util.function.Consumer;
+
+public class MethodReferenceDemo {
+    public static void main(String[] args) {
+        // Lambda expression
+        Consumer<String> lambdaPrinter = message -> System.out.println(message);
+        lambdaPrinter.accept("Hello with Lambda");
+
+        // Method reference
+        Consumer<String> methodRefPrinter = System.out::println;
+        methodRefPrinter.accept("Hello with Method Reference");
+    }
+}
+```
+
+#### Instance Method Reference of a Particular Object
+
+```java
+public class MethodReferenceDemo {
+    public static void main(String[] args) {
+        MethodReferenceDemo demo = new MethodReferenceDemo();
+
+        // Lambda expression
+        Runnable lambdaRunner = () -> demo.run();
+        lambdaRunner.run();
+
+        // Method reference
+        Runnable methodRefRunner = demo::run;
+        methodRefRunner.run();
+    }
+
+    public void run() {
+        System.out.println("Running with Method Reference");
+    }
+}
+```
+
+#### Instance Method Reference of an Arbitrary Object of a Particular Type
+
+```java
+import java.util.Arrays;
+import java.util.List;
+
+public class MethodReferenceDemo {
+    public static void main(String[] args) {
+        List<String> list = Arrays.asList("a", "b", "c");
+
+        // Lambda expression
+        list.forEach(item -> System.out.println(item));
+
+        // Method reference
+        list.forEach(System.out::println);
+    }
+}
+```
+
+#### Constructor Reference
+
+```java
+import java.util.function.Supplier;
+
+public class MethodReferenceDemo {
+    public static void main(String[] args) {
+        // Lambda expression
+        Supplier<MethodReferenceDemo> lambdaSupplier = () -> new MethodReferenceDemo();
+        MethodReferenceDemo demo1 = lambdaSupplier.get();
+
+        // Method reference
+        Supplier<MethodReferenceDemo> methodRefSupplier = MethodReferenceDemo::new;
+        MethodReferenceDemo demo2 = methodRefSupplier.get();
+    }
+}
+```
+
+### Explanation
+
+- **Static Method Reference**: `System.out::println` is a reference to the static method `println` of the `System.out` class.
+- **Instance Method Reference of a Particular Object**: `demo::run` is a reference to the instance method `run` of the `demo` object.
+- **Instance Method Reference of an Arbitrary Object of a Particular Type**: `System.out::println` is used to print each item in the list.
+- **Constructor Reference**: `MethodReferenceDemo::new` is a reference to the constructor of the `MethodReferenceDemo` class.
+
+
+### Built-in Functional Interfaces
+
+Java provides a set of built-in functional interfaces in the `java.util.function` package. These interfaces are commonly used with lambda expressions and method references to represent functions.
+
+![img_66.png](img_66.png) - All are fall into these 4 categories
+
+1. Consumer—Accepts a single input and returns no result.    consume
+2. Supplier—Take no input but Represents a supplier of results.
+3. Function--Represents a function that accepts one argument and produces a result.
+4. Predicate—Represents a predicate (boolean-valued function) of one argument.
+
+
+### Consumer Interface
+
+BiConsumer - Represents an operation that accepts two input arguments and returns no result. `accept(T t, U u)`
+IntConsumer - Represents an operation that accepts a single int-valued argument and returns no result. `accept(int value)`
+
+```java
+package lambdas;
+
+import java.util.List;
+
+public class LambdasDemo {
+    public static void show() {
+        List<Integer> list = List.of(1, 2,3);
+
+        // Imperative Programming (for, if/else, switch/case)
+        for (var item: list)
+            System.out.println(item);
+
+        // Declarative Programming (Functional Programming)
+        list.forEach(item -> System.out.println(item));
+    }
+}
+
+```
+
+### Chaining Consumers
+
+Chaining consumers in Java allows you to perform multiple operations sequentially on each element of a collection. This is achieved using the `andThen` method of the `Consumer` interface. The `andThen` method returns a new `Consumer` that performs the actions of both consumers in sequence.
+
+**andThen**: The `andThen` method of the `Consumer` interface allows you to chain multiple consumers together. It returns a new `Consumer` that performs the actions of both consumers in sequence.
+
+### Example
+
+Here is an example demonstrating how to chain consumers:
+
+```java
+import java.util.List;
+import java.util.function.Consumer;
+
+public class LambdasDemo {
+    public static void show() {
+        List<String> list = List.of("a", "b", "c");
+
+        // Define two consumers
+        Consumer<String> print = item -> System.out.println(item);
+        Consumer<String> printUpperCase = item -> System.out.println(item.toUpperCase());
+
+        // Chain the consumers
+        list.forEach(print.andThen(printUpperCase));
+//        list.forEach(print.andThen(printUpperCase).andThen(print));
+    }
+}
+```
+
+### Explanation
+
+- **Define Consumers**: Two consumers are defined, one to print the item and another to print the item in uppercase.
+- **Chain Consumers**: The `andThen` method is used to chain the two consumers. For each item in the list, the first consumer (`print`) is executed, followed by the second consumer (`printUpperCase`).
+- **Output**: The output will be each item printed in its original form followed by its uppercase form.
+
+This approach allows you to combine multiple operations into a single pass over the collection, making the code more concise and readable.
+
+
+### Supplier Interface
+
+```java
+import java.util.function.Supplier;
+
+public class LambdasDemo {
+    public static void show() {
+        // Nice to work with primitive types
+        // until we call it, it doesn't do anything
+        Supplier<Double> getRandom = () ->  Math.random();
+        Double random = getRandom.get();
+        System.out.println(random);
+    }
+}
+```
+
+### Function Interface
+- BiFunction - Represents a function that accepts two arguments and produces a result. `R apply(T t, U u)`
+- IntFunction - Represents a function that accepts an int-valued argument and produces a result. `R apply(int value)`
+- ToIntFunction - Represents a function that accepts an argument and produces an int-valued result. `int applyAsInt(T value)`
+- IntToLongFunction - Represents a function that accepts an argument and produces a long-valued result. `long applyAsLong(int value)`
+
+https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html
+
+```java
+public class LambdasDemo {
+    public static void show() {
+        Function<String, Integer> map = str -> str.length();
+        var length = map.apply("sky");
+        System.out.println(length);
+    }
+}
+```
+
+### Composing Functions
+
+Composing functions in Java allows you to combine multiple functions into a single function. This is achieved using the `compose` and `andThen` methods of the `Function` interface. The `compose` method applies the specified function before the current function, while the `andThen` method applies the specified function after the current function.
+
+```java
+package lambdas;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class LambdasDemo {
+    public static void show() {
+        // "key:value"
+        // first: "key=value"
+        // second: "{key=value}"
+        Function<String, String> replaceColon = str -> str.replace(":", "=");
+        Function<String, String> addBraces = str -> "{" + str + "}";
+
+        var result = replaceColon
+                .andThen(addBraces)
+                .apply("key:value");
+
+        // Reverse
+        result = addBraces.andThen(replaceColon).apply("key:value");
+        System.out.println(result);
+    }
+}
+```
+
+### Predicate
+
+Predicate - Represents a predicate (boolean-valued function) of one argument. `test(T t)`
+
+BiPredicate - Represents a predicate (boolean-valued function) of two arguments. `test(T t, U u)`
+
+IntPredicate - Represents a predicate (boolean-valued function) of one int-valued argument. `test(int value)`
+
+LongPredicate - Represents a predicate (boolean-valued function) of one long-valued argument. `test(long value)`
+
+```java
+public class LambdasDemo {
+    public static void show() {
+        // check if the length is more than given input
+        Predicate<String> isLongerThan5 = str -> str.length() > 5;
+        var result = isLongerThan5.test("sky");
+        System.out.println(result);
+    }
+}
+```
+
+### Combining Predicate 
+
+Combining predicates in Java allows you to create more complex conditions by combining multiple predicates. This is achieved using the `and`, `or`, and `negate` methods of the `Predicate` interface. The `and` method combines two predicates using a logical AND operation, the `or` method combines two predicates using a logical OR operation, and the `negate` method negates the result of a predicate.
+
+```java
+public class LambdasDemo {
+    public static void show() {
+        Predicate<String> hasLeftBrace = str -> str.startsWith("{");
+        Predicate<String> hasRightBrace = str -> str.endsWith("}");
+
+        // && || !
+        Predicate<String> hasRightandLeftBrace = hasRightBrace.and(hasLeftBrace);
+        Predicate<String> hasRightorLeftBrace = hasRightBrace.or(hasLeftBrace);
+        
+        boolean result = hasRightorLeftBrace.test("{key:value}");
+        
+//        Predicate<String> negate = hasRightBrace.negate();
+//        boolean result = negate.test("}key:value");
+        System.out.println(result);
+    }
+}
+```
+
+### Binary Operator Interface
+
+**BinaryOperator** - Represents an operation upon two operands of the same type, producing a result of the same type. `T apply(T t, T u)`
+
+**IntBinaryOperator** - Represents an operation upon two int-valued operands and produces an int-valued result. `int applyAsInt(int left, int right)`
+
+```java
+public class LambdasDemo {
+    public static void show() {
+        // var x = 1 + 2;
+        // a, b -> a + b -> square
+        BinaryOperator<Integer> add = (a, b) -> a + b;
+        Function<Integer, Integer> square = a -> a * a;
+
+        var result = add.andThen(square).apply(1,2);
+        System.out.println(result);
+
+    }
+}
+```
+
+
+### Unary Operator
+
+**UnaryOperator** - Represents an operation on a single operand that produces a result of the same type as its operand. `T apply(T t)`
+
+```java
+package lambdas;
+
+import java.util.List;
+import java.util.function.*;
+
+public class LambdasDemo {
+    public static void show() {
+        UnaryOperator<Integer> square = n -> n * n;
+        UnaryOperator<Integer> increment = n -> n + 1;
+
+        var result = increment.andThen(square).apply(1);
+        System.out.println(result);
+
+    }
+}
+
+```
+
+
+### Summary - Lambdas
+
+**Lambda Expressions** - Anonymous functions that can pass around our code.
+**Functional Interface** - An interface with a single abstract method. We can use them to represent a function. In Java, We have 4 different functional Interfaces
+1. Consumer - Accepts a single input and returns no result.
+2. Supplier - Take no input but Represents a supplier of results.
+3. Function - Represents a function that accepts one argument and produces a result.
+4. Predicate - Represents a predicate (boolean-valued function) of one argument.
+5. Composition - Combining multiple functions into a single function using `compose` and `andThen` methods of the `Function` interface.
+
+We can compose this interface to build most complex functions
+
+
+# Streams
+
+
 
 [//]: # ()
 [//]: # ()
