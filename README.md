@@ -70,6 +70,41 @@
 
 3. [Advanced Topics](#advanced-topics)
    1. [Exceptions](#exceptions)
+      1. [Types of Exception](#types-of-exceptions)
+      2. [Exception Hierarchy](#exception-hierarchy)
+      3. [Catching Exceptions](#catching-exceptions)
+      4. [Cathcing multiple type of Exceptions](#catching-a-multiple-type-of-exception)
+      5. [The finally Block](#the-finally-block)
+      6. [Try-with-Resources Statement](#try-with-resource-statement)
+      7. [Throwing Exceptions](#throwing-exceptions)
+      8. [Rethrowing Exceptions](#rethrowing-exceptions)
+      9. [Custom Exceptions](#custom-exceptions)
+      10. [Chaining Exceptions](#chaining-exceptions)
+   2. [Generics](#generics)
+      1. [Generic Classes](#generic-classes)
+      2. [Generic and Primitive Types](#generic-and-primitive-types)
+      3. [Constraints with Generics](#constraints)
+      4. [Type Erasure](#type-erasure)
+      5. [Comparable Interface](#comparable-interface)
+      6. [Generic Methods](#generic-methods)
+      7. [Multiple type parameters](#multiple-type-parameters)
+      8. [Generic classes and Interfaces](#generic-classes-and-interfaces)
+      9. [Wildcards](#wildcards)
+      10. [Summary](#summarygenerics)
+   3. [Collection Framework](#collections-framework)
+      1. [Iterable Interface](#iterable-interface)
+      2. [Iterator Interface](#iterator-interface)
+      3. [Collection Interface](#collection-interface)
+      4. [List Interface](#list-interface)
+      5. [Comparable Interface](#comparable-interface)
+      6. [Comparator Interface](#comparator-interface)
+      7. [Queue Interface](#queue-interface)
+      8. [Set Interface](#set-interface)
+      9. [Map Interface](#map-interface)
+      10. [Summary](#summary---collection)
+   4. [Lambda Expressions and Functional Interface](#lambda-expressions-and-functional-interfaces)
+      1. [Functional Interfaces](#functional-interfaces)
+   
 
 
 
@@ -3541,7 +3576,7 @@ public class Main {
 ![img_52.png](img_52.png)
 ![img_53.png](img_53.png)
 
-## Exceptions
+# Exceptions
 ![img_54.png](img_54.png)
 
 
@@ -4061,3 +4096,1465 @@ public class Main {
 - **Throwing Exception**: The `withdraw` method in `Account` class throws an `AccountException` with an `InsufficientFundsException` as the cause.
 - **Handling Exception**: In the `Main` class, the chained exception is caught, and both the main message and the cause message are printed.
 
+# Generics
+
+Many of the Collections class of Java using generics
+ 
+
+### Need of Generics
+
+```java
+// List.java
+package generics;
+
+public class List {
+    private int[] items = new int[10];
+    private int count;
+
+    public void add(int item){
+        items[count++] = item;
+    }
+
+    public int get(int index){
+        return items[index];
+    }
+}
+
+// User.java
+package generics;
+
+public class User {
+}
+
+// UserList.java
+package generics;
+
+public class UserList {
+    private User[] items = new User[10];
+    private int count;
+
+    // We created new List class when we need to store list of integers.
+    // Again, we created UserList class inorder to create UserList class. What if we need lots of classes to store other things.
+    // Where generic comes in.
+}
+
+```
+
+
+### Poor solution
+
+We know Object class is a parent class of reference type classes
+
+```java
+// Main.java
+import exceptions.ExceptionsDemo;
+import generics.List;
+import generics.User;
+
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+        var list = new List();
+        list.add(1); // this is primitive. but Java will convert it. Integer.valueOf(1)
+        list.add("1");
+        list.add(new User());
+
+        int number = (int) list.get(0); // explicitly casting, little verbose and noisy
+//        int number = (int) list.get(1); // What if we do like this, if we did wrong casting, InvalidCastException
+        // Also we can only identify this problem in runtime
+
+    }
+}
+
+/*
+ * This is really bad solution for couple of reasons.
+ *
+ *
+ * */
+
+
+// List.java
+package generics;
+
+public class List {
+    private Object[] items = new Object[10];
+    private int count;
+
+    public void add(Object item){
+        items[count++] = item;
+    }
+
+    public Object get(int index){
+        return items[index];
+    }
+}
+
+```
+
+### Generic Classes
+
+Generic classes in Java allow you to create classes that can operate on objects of various types while providing compile-time type safety. This helps to avoid runtime errors and reduces the need for type casting.
+
+### Key Points:
+- **Type Parameters**: Generic classes use type parameters (e.g., `<T>`) to specify the types they operate on.
+- **Type Safety**: Generics provide compile-time type safety, ensuring that you can only use the specified types.
+- **Reusability**: Generic classes can be reused with different types without code duplication.
+
+### Example
+
+Here is an example demonstrating how to create and use a generic class:
+
+#### `GenericList.java`
+```java
+package generics;
+
+public class GenericList<T> {
+    private T[] items = (T[]) new Object[10];
+    private int count;
+
+    public void add(T item) {
+        items[count++] = item;
+    }
+
+    public T get(int index) {
+        return items[index];
+    }
+}
+```
+
+### Explanation
+- **Type Parameter**: `<T>` is the type parameter, allowing the class to operate on objects of type `T`.
+- **Array of Type `T`**: The `items` array is cast to `T[]` to store objects of type `T`.
+- **Add Method**: The `add` method adds an item of type `T` to the list.
+- **Get Method**: The `get` method retrieves an item of type `T` from the list.
+
+### Usage
+
+Here is an example of how to use the `GenericList` class:
+
+#### `Main.java`
+```java
+import generics.GenericList;
+import generics.User;
+
+public class Main {
+    public static void main(String[] args) {
+        var list = new GenericList<Integer>();
+        list.add(1);
+        int number = list.get(0);
+
+        var list2 = new GenericList<User>();
+        list2.add(new User());
+        User user = list2.get(0);
+    }
+}
+```
+
+### Explanation
+- **Integer List**: A `GenericList` of `Integer` is created, and an integer is added and retrieved.
+- **User List**: A `GenericList` of `User` is created, and a `User` object is added and retrieved.
+
+Generic classes enhance code reusability and type safety, making your code more robust and easier to maintain.
+
+
+### Generic and Primitive Types
+
+#### Boxing and Unboxing in Java
+
+Boxing and unboxing are processes in Java that convert between primitive types and their corresponding wrapper classes. This is particularly important when working with generics, as generics in Java only work with objects, not primitive types.
+
+### Key Points:
+- **Boxing**: Converting a primitive type to its corresponding wrapper class.
+- **Unboxing**: Converting a wrapper class back to its corresponding primitive type.
+- **Generics**: Generics in Java require objects, so primitive types are automatically boxed when used with generics.
+
+### Example
+
+Here is an example demonstrating boxing and unboxing with generics:
+
+#### `GenericList.java`
+```java
+package generics;
+
+public class GenericList<T> {
+    private T[] items = (T[]) new Object[10];
+    private int count;
+
+    public void add(T item) {
+        items[count++] = item;
+    }
+
+    public T get(int index) {
+        return items[index];
+    }
+}
+```
+
+#### `Main.java`
+```java
+import generics.GenericList;
+
+public class Main {
+    public static void main(String[] args) {
+        // int -> Integer
+        // float -> Float
+        // boolean -> Boolean
+
+        GenericList<Integer> numbers = new GenericList<>();
+        numbers.add(1); // Boxing: int 1 is converted to Integer
+        Integer number = numbers.get(0); // Unboxing: Integer is converted to int
+    }
+}
+```
+
+### Explanation
+- **Boxing**: When `1` is added to `GenericList<Integer>`, it is automatically converted (boxed) to an `Integer` object.
+- **Unboxing**: When retrieving the value from the list, the `Integer` object is automatically converted (unboxed) to an `int`.
+
+Boxing and unboxing allow seamless integration of primitive types with generics, ensuring type safety and reducing the need for explicit conversions.
+
+### Constraints
+
+Constraint doesn't have to be a class, it can be interface.
+- Comparable - is an interface, used to compare objects.
+  - Can pass any class that implements Comparable interface. User class doesn't implement Comparable interface, so we can't pass User class to this method. But if we implement Comparable interface in User class, we can pass User class to this method.
+
+Constraints in generics allow you to specify that a type parameter must satisfy certain conditions, such as implementing a specific interface or extending a particular class. This ensures that the generic type can use the methods and properties defined by the constraint.
+
+### Key Points:
+- **Bounded Type Parameters**: Use the `extends` keyword to specify that a type parameter must extend a class or implement an interface.
+- **Multiple Bounds**: A type parameter can have multiple bounds, separated by the `&` symbol.
+- **Interface Constraints**: Constraints can be interfaces, ensuring that the type parameter implements the specified interface.
+
+### Example
+
+Here is an example demonstrating how to use constraints in generics:
+
+#### `GenericList.java`
+```java
+package generics;
+
+public class GenericList<T extends Comparable<T> & Cloneable> {
+    private T[] items = (T[]) new Object[10];
+    private int count;
+
+    public void add(T item) {
+        items[count++] = item;
+    }
+
+    public T get(int index) {
+        return items[index];
+    }
+}
+```
+
+### Explanation
+- **Bounded Type Parameter**: `<T extends Comparable<T> & Cloneable>` specifies that `T` must implement both `Comparable` and `Cloneable` interfaces.
+- **Type Safety**: Ensures that the methods of `Comparable` and `Cloneable` can be used with `T`.
+
+### Usage
+
+Here is an example of how to use the `GenericList` class with constraints:
+
+#### `User.java`
+```java
+// if you don't understand, dont worry  will be back here.
+package generics;
+
+public class User implements Comparable<User>, Cloneable {
+    private String name;
+
+    public User(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public int compareTo(User other) {
+        return this.name.compareTo(other.name);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+```
+
+#### `Main.java`
+```java
+import generics.GenericList;
+import generics.User;
+
+public class Main {
+    public static void main(String[] args) {
+        GenericList<User> users = new GenericList<>();
+        users.add(new User("Alice"));
+        User user = users.get(0);
+    }
+}
+```
+
+### Explanation
+- **User Class**: Implements `Comparable<User>` and `Cloneable`, satisfying the constraints of `GenericList`.
+- **GenericList Usage**: A `GenericList` of `User` objects is created, and a `User` object is added and retrieved.
+
+Constraints in generics ensure type safety and allow you to use specific methods and properties of the constrained types, making your code more robust and maintainable.
+
+### Type Erasure
+
+- Type erasure in Java is a process where the compiler removes type parameters and replaces them with their bounds or the most specific type. This is done to ensure compatibility with older versions of Java (Backward Compatibility) that do not support generics.
+- When you check the bytecode, you will see the type is removed and replaced with Object. (Active on Generic Class  -> View -> Show Bytecode)
+
+Type erasure in Java is a process where the compiler removes type parameters and replaces them with their bounds or the most specific type. This is done to ensure compatibility with older versions of Java that do not support generics.
+
+### Key Points:
+- **Type Parameters Removal**: The compiler removes all type parameters in generic types.
+- **Replacement with Bounds**: If a type parameter has a bound, it is replaced with the first bound.
+- **Object Replacement**: If a type parameter has no bounds, it is replaced with `Object`.
+- **Backward Compatibility**: Ensures that generic code can interoperate with legacy code that uses raw types.
+
+### Example
+
+Here is an example demonstrating type erasure:
+
+#### `GenericList.java`
+```java
+package generics;
+
+public class GenericList<T> {
+    private T[] items = (T[]) new Object[10];
+    private int count;
+
+    public void add(T item) {
+        items[count++] = item;
+    }
+
+    public T get(int index) {
+        return items[index];
+    }
+}
+```
+
+### After Type Erasure
+
+After type erasure, the `GenericList` class would look like this:
+
+```java
+package generics;
+
+public class GenericList {
+    private Object[] items = new Object[10];
+    private int count;
+
+    public void add(Object item) {
+        items[count++] = item;
+    }
+
+    public Object get(int index) {
+        return items[index];
+    }
+}
+```
+
+### Explanation
+- **Type Parameter Removal**: The type parameter `T` is removed.
+- **Object Replacement**: The type parameter `T` is replaced with `Object`.
+
+Type erasure allows you to use generics in Java while maintaining backward compatibility with older versions of the language.
+
+
+### Comparable Interface
+
+The `Comparable` interface in Java is used to define a natural ordering for objects of a class. When a class implements `Comparable<T>`, it must override the `compareTo` method to provide a comparison logic. This is particularly useful in generics to ensure that objects can be compared and sorted.
+
+### Key Points:
+- **Type Parameter**: The `Comparable<T>` interface uses a type parameter to specify the type of objects that can be compared.
+- **compareTo Method**: The `compareTo` method must be overridden to define the natural ordering.
+- **Return Values**: The `compareTo` method returns:
+    - A negative integer if the current object is less than the specified object.
+    - Zero if the current object is equal to the specified object.
+    - A positive integer if the current object is greater than the specified object.
+
+### Example
+
+Here is an example demonstrating how to implement the `Comparable` interface in a generic class:
+
+#### `User.java`
+```java
+package generics;
+
+public class User implements Comparable<User> {
+    private int points;
+
+    public User(int points) {
+        this.points = points;
+    }
+
+    @Override
+    public int compareTo(User other) {
+        return Integer.compare(points, points);
+    }
+
+//    @Override
+//    public int compareTo(User other) {
+//        return points - other.points;
+//    }
+}
+
+
+/*
+ * Logic behind
+ *     @Override
+    public int compareTo(User other) {
+        // this < o -> -1
+        // this == o -> 0
+        // this > o -> 1
+        return points - other.points;
+
+//        if (points < o.points)
+//            return -1;
+//
+//        if (points == o.points)
+//            return 0;
+//
+//        return 1;
+    }
+}
+
+ * */
+```
+
+### Explanation
+- **Implements Comparable**: The `User` class implements `Comparable<User>`, specifying that `User` objects can be compared.
+- **compareTo Method**: The `compareTo` method compares the `points` of the current `User` object with another `User` object.
+
+### Usage
+
+Here is an example of how to use the `User` class with the `Comparable` interface:
+
+#### `Main.java`
+```java
+import generics.User;
+
+public class Main {
+    public static void main(String[] args) {
+        User user1 = new User(10);
+        User user2 = new User(20);
+
+        if (user1.compareTo(user2) < 0)
+            System.out.println("user1 < user2");
+        else if (user1.compareTo(user2) == 0)
+            System.out.println("user1 == user2");
+        else
+            System.out.println("user1 > user2");
+    }
+}
+```
+
+### Explanation
+- **Comparison**: The `compareTo` method is used to compare `user1` and `user2`, and the result is printed based on the comparison.
+
+
+### Generic Methods
+
+Generic methods allow you to define methods with type parameters, enabling them to operate on different types while providing compile-time type safety. This is useful when you want a method to be flexible and reusable with various data types.
+
+### Key Points:
+- **Type Parameters**: Defined before the return type of the method (e.g., `<T>`).
+- **Type Inference**: The compiler can often infer the type parameters based on the method arguments.
+- **Type Safety**: Ensures that the method operates on the specified types, reducing runtime errors.
+
+### Example
+
+Here is an example demonstrating how to create and use a generic method:
+
+#### `Utils.java`
+```java
+package generics;
+
+public class Utils {
+    public static <T extends Comparable<T>> T max(T first, T second) {
+        return (first.compareTo(second) > 0) ? first : second;
+    }
+}
+
+/*
+* public class Utils {
+    public static int max(int first, int second){
+        return (first > second) ? first : second;
+    }
+}
+* What if we wanna use for any types.
+* First add generic type parameter before the return type.
+* Then replace the type with T.
+* To compare the object extend T with Comparable interface.
+*
+* public static <T extends Comparable<T>> T max(T first, T second){
+        return first.compareTo(second) < 0 ? second : first;
+    }
+*
+* */
+```
+
+#### `User.java`
+```java
+// Add this to User.java
+ @Override
+    public String toString(){
+        return "Points = " + points;
+    }
+```
+
+### Explanation
+- **Type Parameter**: `<T extends Comparable<T>>` specifies that `T` must implement the `Comparable` interface.
+- **max Method**: Compares two objects of type `T` and returns the larger one.
+
+### Usage
+
+Here is an example of how to use the `max` method:
+
+#### `Main.java`
+```java
+import generics.Utils;
+import generics.User;
+
+public class Main {
+    public static void main(String[] args) {
+        var max = Utils.max(new User(10), new User(20));
+        System.out.println(max);
+    }
+}
+
+// Alternative
+/*
+ * User user = Utils.max(new User(10), new User(20));
+   System.out.println("Max user points: " + user.getPoints());
+ * 
+ * To achieve this simply add getPoints getter in User class.
+ * Then no need to override toString method in User class.
+ * 
+ * */
+```
+
+### Explanation
+- **Type Inference**: The compiler infers the type parameter `T` based on the arguments passed to the `max` method.
+- **Comparison**: The `max` method is used to compare two `User` objects and return the one with the higher points.
+
+Generic methods enhance code reusability and type safety, making your code more flexible and robust.
+
+
+### Multiple Type Parameters
+
+In Java, you can define generic classes, interfaces, and methods with multiple type parameters. This allows you to work with multiple types in a type-safe manner.
+
+### Key Points:
+- **Multiple Type Parameters**: Use comma-separated type parameters within angle brackets (e.g., `<K, V>`).
+- **Type Safety**: Ensures that each type parameter is used consistently within the class, interface, or method.
+- **Flexibility**: Allows you to create more flexible and reusable code.
+
+### Example
+
+Here is an example demonstrating how to use multiple type parameters in a generic class:
+
+#### `KeyValuePair.java`
+```java
+package generics;
+
+public class KeyValuePair<K, V> {
+    private K key;
+    private V value;
+
+    public KeyValuePair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return key + " = " + value;
+    }
+}
+```
+
+### Explanation
+- **Multiple Type Parameters**: `<K, V>` specifies two type parameters, `K` and `V`.
+- **Constructor**: Initializes the `key` and `value` fields with the provided arguments.
+- **Getters**: `getKey` and `getValue` methods return the key and value, respectively.
+- **toString Method**: Provides a string representation of the key-value pair.
+
+### Usage
+
+Here is an example of how to use the `KeyValuePair` class:
+
+#### `Main.java`
+```java
+import generics.KeyValuePair;
+
+public class Main {
+    public static void main(String[] args) {
+        KeyValuePair<Integer, String> pair = new KeyValuePair<>(1, "One");
+        System.out.println(pair);
+    }
+}
+```
+
+### Explanation
+- **Instantiation**: Creates a `KeyValuePair` object with an `Integer` key and a `String` value.
+- **Output**: Prints the key-value pair using the `toString` method.
+
+Using multiple type parameters in generics allows you to create more versatile and type-safe classes, interfaces, and methods.
+
+
+### Generic Classes and Interfaces
+
+```java
+// Instructor.java
+package generics;
+
+public class Instructor extends User{
+
+    public Instructor(int points) {
+        super(points);
+    }
+}
+
+// Utils.java
+package generics;
+
+public class Utils {
+    public static <T extends Comparable<T>> T max(T first, T second){
+        return first.compareTo(second) < 0 ? second : first;
+    }
+
+    public static void printUser(User user){
+        System.out.println(user);
+    }
+
+    public static void printUsers(GenericList<User> users){
+
+    }
+}
+
+// Main.java
+import generics.GenericList;
+import generics.Instructor;
+import generics.User;
+import generics.Utils;
+
+public class Main {
+    public static void main(String[] args) {
+        User user = new Instructor(10);
+        Utils.printUser(user);
+
+        var users = new GenericList<User>();
+//        var users = new GenericList<Instructor>();
+        Utils.printUsers(users);
+    }
+
+}
+
+/*
+*  public static void main(String[] args) {
+        User user = new Instructor(10);
+        Utils.printUser(user);
+
+        var users = new GenericList<User>();
+        * When we change to Instructor, it will show an error
+        *  Generic List of Instructor is not subtype of Generic List of Users
+        * Bcz, in bytecode, it will be common Object.
+        *
+        * Then how to solve this,
+        *
+        * var instructors = new GenericList<Instructor>();
+        * var users = new GenericList<User>();
+        *
+        * Now iterate over instructors and add to users. then, print user.
+        * Utils.printUsers(users);
+        *
+        * This is tedious.
+        *
+        * But there is Wildcard, which is a solution for this.
+        * Will see next
+        *
+        var users = new GenericList<Instructor>();
+        Utils.printUsers(users);
+    }
+*
+* */
+```
+
+
+### Wildcards
+
+Wildcards in Java generics provide a way to use generics more flexibly. They allow you to specify a range of types that a generic type can accept, making your code more adaptable and reusable.
+
+### Key Points:
+- **Unbounded Wildcards (`?`)**: Represents an unknown type. Useful when you want to work with a generic type but do not care about the specific type.
+- **Bounded Wildcards**:
+    - **Upper Bounded Wildcards (`? extends T`)**: Restricts the unknown type to be a subtype of `T`. Useful for reading data.
+    - **Lower Bounded Wildcards (`? super T`)**: Restricts the unknown type to be a supertype of `T`. Useful for writing data.
+
+
+```java
+// Utils.java
+package generics;
+
+public class Utils {
+    public static <T extends Comparable<T>> T max(T first, T second){
+        return first.compareTo(second) < 0 ? second : first;
+    }
+
+    public static void printUser(User user){
+        System.out.println(user);
+    }
+
+
+    // class CAP#1 extends User{}
+    // class Instructor extends User{}
+    public static void printUsers(GenericList<? extends User> users){
+        User x = users.get(0);
+
+    }
+}
+
+/*
+*   // class CAP#1 extends User{}
+    // class Instructor extends User{}
+    public static void printUsers(GenericList<? extends User> users){
+        User x = users.get(0); // can only read from the list
+        users.add(); // Error
+        * We can't add to the list, bcz, it is not sure, what type of list it is.
+        * For that we can use super keyword.
+        *
+        * When we add super keyword, it will be able to add to the list. But, we can't read from the list. but you can store it in Object but not User.
+        * (GenericList<? super User> users)
+        * users will be act like temp.
+        * GenericList<Object> temp = new GenericList<>();
+        *
+        * If you want to read from list, then use extends keyword.
+        * If you want to write to the list, then use super keyword.
+ }
+*
+* */
+```
+
+### Example
+
+#### Unbounded Wildcard
+
+```java
+public void printList(List<?> list) {
+    for (Object obj : list) {
+        System.out.println(obj);
+    }
+}
+```
+
+### Explanation
+- **Unbounded Wildcard**: The `printList` method can accept a list of any type.
+
+#### Upper Bounded Wildcard
+
+```java
+public void printNumbers(List<? extends Number> list) {
+    for (Number num : list) {
+        System.out.println(num);
+    }
+}
+```
+
+### Explanation
+- **Upper Bounded Wildcard**: The `printNumbers` method can accept a list of any type that is a subtype of `Number`.
+
+#### Lower Bounded Wildcard
+
+```java
+public void addNumbers(List<? super Integer> list) {
+    list.add(10);
+    list.add(20);
+}
+```
+
+### Explanation
+- **Lower Bounded Wildcard**: The `addNumbers` method can accept a list of any type that is a supertype of `Integer`.
+
+### Usage
+
+Here is an example of how to use wildcards in a generic class:
+
+#### `Main.java`
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> intList = new ArrayList<>();
+        intList.add(1);
+        intList.add(2);
+
+        List<Double> doubleList = new ArrayList<>();
+        doubleList.add(1.1);
+        doubleList.add(2.2);
+
+        printList(intList);
+        printList(doubleList);
+
+        printNumbers(intList);
+        // printNumbers(doubleList); // This will cause a compile-time error
+
+        addNumbers(intList);
+        // addNumbers(doubleList); // This will cause a compile-time error
+    }
+
+    public static void printList(List<?> list) {
+        for (Object obj : list) {
+            System.out.println(obj);
+        }
+    }
+
+    public static void printNumbers(List<? extends Number> list) {
+        for (Number num : list) {
+            System.out.println(num);
+        }
+    }
+
+    public static void addNumbers(List<? super Integer> list) {
+        list.add(10);
+        list.add(20);
+    }
+}
+```
+
+### Explanation
+- **Unbounded Wildcard**: `printList` can accept any type of list.
+- **Upper Bounded Wildcard**: `printNumbers` can accept a list of `Number` or its subtypes.
+- **Lower Bounded Wildcard**: `addNumbers` can accept a list of `Integer` or its supertypes.
+
+## Summary—Generics
+
+With generics, we can create general purpose classes and methods that can work with different types of objects. Generics are very common in Java. As you will see throughout this course, a lot of built-in classes and interfaces in Java are generic. Now, when we compile a generic class, the Java Compiler will erase the generic type parameter and replace it with an actual class. By default, it will use the object class unless we apply a constraint to a parameter. We can apply a constraint using the extends keyword, and this will ensure that we can only use the given type or its subtypes as a generic type argument. We also talked about wild cards. With wild cards, we can cast generic types. So that's it.
+
+# Collections Framework
+- The Collection Framework in Java provides a set of classes and interfaces to store and manipulate collections of objects.
+- The core interfaces in the Collection Framework are `Collection`, `List`, `Set`, and `Map`.
+
+![img_61.png](img_61.png)
+
+* **Iterable** - The `Iterable` interface is the root interface for all collection classes. It provides a way to iterate over the elements of a collection.
+   * **Collection** - The `Collection` interface is the base interface for all collection classes. It provides methods to add, remove, and query elements in a collection.
+      *  **List** - The `List` interface extends `Collection` and represents an ordered collection of elements. It allows duplicate elements and provides methods to access elements by index.
+          *  **ArrayList** - The `ArrayList` class implements the `List` interface using a dynamic array. It allows fast random access to elements and is suitable for storing large collections.
+          *  **LinkedList** - The `LinkedList` class implements the `List` interface using a doubly linked list. It provides fast insertion and deletion of elements and is suitable for implementing queues and stacks.
+      *  **Set** - The `Set` interface extends `Collection` and represents a collection of unique elements. It does not allow duplicate elements.
+          *  **HashSet** - The `HashSet` class implements the `Set` interface using a hash table. It provides constant-time performance for basic operations and does not guarantee the order of elements.
+      *  **Queue** - The `Queue` interface extends `Collection` and represents a collection of elements in a specific order. It provides methods for adding, removing, and inspecting elements.
+          *  **Priority Queue** - The `PriorityQueue` class implements the `Queue` interface using a priority heap. It orders elements based on their natural ordering or a custom comparator.
+
+
+
+### Need for iterables
+```java
+package generics;
+
+public class GenericList<T> {
+    public T[] items = (T[]) new Object[10];
+    // we need to change privqte to public, inorder to access in Main class
+    // what if change in furure as ArrayList<T> items = new ArrayList<T>();, then we need to change all the references
+    private int count;
+
+    public void add(T item){
+        items[count++] = item;
+    }
+
+    public T get(int index){
+        return items[index];
+    }
+}
+
+// Main.java
+import generics.GenericList;
+import generics.Instructor;
+import generics.User;
+import generics.Utils;
+
+public class Main {
+    public static void main(String[] args) {
+        var list = new GenericList<String>();
+        list.add("a");
+        list.add("b");
+        for (var item : list.items)
+            System.out.println(item);
+    }
+}
+
+```
+
+### Iterable interface
+
+- We can iterate over it without anything known about the implementation details.
+```java
+package generics;
+
+import java.util.Iterator;
+
+public class GenericList<T> implements Iterable<T> {
+    private T[] items = (T[]) new Object[10];
+    private int count;
+
+    public void add(T item){
+        items[count++] = item;
+    }
+
+    public T get(int index){
+        return items[index];
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return null;
+    }
+    // need to implement
+}
+
+//Main.java
+import generics.GenericList;
+import generics.Instructor;
+import generics.User;
+import generics.Utils;
+
+public class Main {
+    public static void main(String[] args) {
+        var list = new GenericList<String>();
+        var iterator = list.iterator();
+
+        // [a, b, c] 
+        //  ^
+        if (iterator.hasNext()){
+            var current = iterator.next();
+            System.out.println(current);
+        }
+//      for (var item: list){
+//        System.out.println(item);
+//      }
+    }
+}
+
+
+```
+
+
+### Iterator interface
+
+The `Iterator` interface in Java is part of the Java Collections Framework and provides a way to traverse elements in a collection sequentially. It is used to iterate over collections such as `List`, `Set`, and `Map`.
+
+### Key Points:
+- **Traversal**: Allows you to traverse a collection of elements one by one.
+- **Methods**: The `Iterator` interface provides three main methods:
+    - `hasNext()`: Returns `true` if there are more elements to iterate over.
+    - `next()`: Returns the next element in the iteration.
+    - `remove()`: Removes the last element returned by the iterator (optional operation).
+
+### Example
+
+Here is an example demonstrating how to use the `Iterator` interface:
+
+#### `GenericList.java`
+```java
+package generics;
+
+import java.util.Iterator;
+
+public class GenericList<T> implements Iterable<T> {
+    private T[] items = (T[]) new Object[10];
+    private int count;
+
+    public void add(T item){
+        items[count++] = item;
+    }
+
+    public T get(int index){
+        return items[index];
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new ListIterator(this);
+    }
+
+    private class ListIterator implements Iterator<T>{
+        private GenericList<T> list;
+        private int index;
+
+        public ListIterator(GenericList<T> list) {
+            this.list = list;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (index < list.count);
+        }
+
+        @Override
+        public T next() {
+            return list.items[index++];
+        }
+    }
+}
+
+/*
+* 1. Create private ListIterator class that implements Iterator<T> interface
+* 2. Implement hasNext() and next() methods
+* 3. We need to pass GenericList<T> list to its constructor
+* 4. Now we need to store this to private list in this class
+*
+* public ListIterator(GenericList<T> list) {
+            this.list = list;
+            list.items // this is perfectly fine. this is part of the implementation of the outer class. In future, if we change this array to ArrayList, just need to alter the ListIterator class
+        }
+
+
+* 5. private field for index to iterate over the array
+* 6. In hasNext() method, check if index is less than count of list
+* 7. In next() method, return the item at index and increment the index
+* 8. In Iterator method, return new ListIterator(this)
+* */
+```
+
+### Explanation
+- **Iterable Interface**: The `GenericList` class implements the `Iterable<T>` interface, allowing it to be used in enhanced for loops.
+- **Iterator Method**: The `iterator()` method returns an instance of `ListIterator`, which implements the `Iterator<T>` interface.
+- **ListIterator Class**: A private inner class that provides the implementation of the `Iterator<T>` interface, including the `hasNext()`, `next()`, and `remove()` methods.
+
+### Usage
+
+Here is an example of how to use the `GenericList` class with the `Iterator` interface:
+
+#### `Main.java`
+```java
+import generics.GenericList;
+
+public class Main {
+    public static void main(String[] args) {
+        var list = new GenericList<String>();
+        list.add("a");
+        list.add("b");
+        
+        // M1 - for iterate
+        for (var item: list){
+            System.out.println(item);
+        }
+        
+        // M2 - for iterate
+//        Iterator<String> iterator = list.iterator();
+//        while (iterator.hasNext()) {
+//            System.out.println(iterator.next());
+//        }
+    }
+}
+```
+
+### Explanation
+- **Iterator Usage**: The `iterator()` method is called on the `GenericList` instance to get an `Iterator`.
+- **Traversal**: The `while` loop uses the `hasNext()` and `next()` methods to traverse and print each element in the list or we can simply use for Each loop.
+
+### Collection Interface
+
+![img_63.png](img_63.png)
+
+```java
+package collections;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+public class CollectionsDemo {
+    public static void show(){
+        Collection<String> collection = new ArrayList<>();
+        Collections.addAll(collection, "a", "b", "c");
+
+        Collection<String> other = new ArrayList<>(collection); // initialize with another collection, instead of other.add(collection);
+
+        System.out.println(collection == other); // false, different references
+        System.out.println(collection.equals(other)); // true, same content
+
+
+//        Object[] objectArray = collection.toArray();
+//        var stringArray = collection.toArray(new String[0]); // Ctrl + Q to see the documentation(type)
+//        stringArray[0]. // Can access string methods
+
+
+//        System.out.println(collection.contains("a"));
+//        collection.remove("a");
+//        collection.clear();
+//        System.out.println(collection.isEmpty());
+//        System.out.println(collection);
+
+//        System.out.println(collection.size());
+//        collection.add("a");
+//        collection.add("b");
+//        collection.add("c");
+//
+//        for (var item: collection)
+//            System.out.println(item);
+
+    }
+}
+
+// Main.java
+        CollectionsDemo.show();
+```
+
+### List Interface
+
+```java
+package collections;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class ListDemo {
+    public static void show(){
+        List<String> list = new ArrayList<>();
+        Collections.addAll(list, "a", "b", "c");
+        System.out.println(list);
+
+//        System.out.println(list.subList(0,2)); // get a sublist of the list, returns new list [a, b]
+//        System.out.println(list.lastIndexOf("a")); // get the last index of the element
+//        System.out.println(list.indexOf("b")); // get the index of the element
+//        list.remove(0); // remove the first element
+//        list.set(0, "a+"); // updating the first element
+//        System.out.println(list.get(0)); // getting the first element
+//        list.add("a");
+//        list.add("b");
+//        list.add("c");
+//        list.add(0, "!");
+    }
+}
+
+```
+
+### Comparable Interface
+
+```java
+// Customer.java
+package collections;
+
+public class Customer implements Comparable<Customer>{
+    private String name;
+
+    public Customer(String name){
+        this.name = name;
+    }
+
+    @Override
+    public int compareTo(Customer other) {
+        return name.compareTo(other.name);
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+}
+```
+
+```java
+// Main.java
+import collections.Customer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Customer> customers = new ArrayList<>();
+        customers.add(new Customer("b"));
+        customers.add(new Customer("a"));
+        customers.add(new Customer("c"));
+        Collections.sort(customers);
+        System.out.println(customers);
+    }
+}
+```
+
+NOTE: 
+`println` method in Java implicitly calls the `toString()` method on the object passed to it. If you pass an object to `System.out.println`, it will call the object's `toString()` method to get a string representation of the object and then print that string.
+
+For example, in your `Main` class, when you call `System.out.println(customers);`, it will call the `toString()` method on the `customers` list. If the `Customer` class overrides the `toString()` method, it will use that implementation to print each `Customer` object in the list.
+
+
+### Comparator Interface
+
+The `Comparator` interface in Java is part of the Java Collections Framework and is used to define a custom order for objects. Unlike the `Comparable` interface, which imposes a natural ordering on objects, the `Comparator` interface allows you to define multiple ways to order objects.
+
+### Key Points:
+- **Custom Order**: Allows you to define custom orderings for objects.
+- **Methods**: The `Comparator` interface provides two main methods:
+    - `compare(T o1, T o2)`: Compares its two arguments for order.
+    - `equals(Object obj)`: Indicates whether some other object is "equal to" this comparator (optional operation).
+
+### Example
+
+Here is an example demonstrating how to use the `Comparator` interface:
+
+#### `EmailComparator.java`
+```java
+package collections;
+
+import java.util.Comparator;
+
+public class EmailComparator implements Comparator<Customer> {
+    @Override
+    public int compare(Customer o1, Customer o2) {
+        return o1.getEmail().compareTo(o2.getEmail());
+    }
+}
+
+// also add Email field to Customer class and add to constructor as well.
+```
+
+
+
+### Explanation
+- **Comparator Implementation**: The `EmailComparator` class implements the `Comparator<Customer>` interface.
+- **compare Method**: The `compare` method compares two `Customer` objects based on their email addresses.
+
+### Usage
+
+Here is an example of how to use the `EmailComparator` class to sort a list of `Customer` objects:
+
+#### `Main.java`
+```java
+import collections.Customer;
+import collections.EmailComparator;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Customer> customers = new ArrayList<>();
+        customers.add(new Customer("b", "e3"));
+        customers.add(new Customer("a", "e2"));
+        customers.add(new Customer("c", "e1"));
+        Collections.sort(customers, new EmailComparator()); // Sort by email
+        System.out.println(customers);
+    }
+}
+```
+
+### Explanation
+- **Sorting**: The `Collections.sort` method is used to sort the `customers` list using the `EmailComparator`.
+- **Output**: The sorted list is printed, showing customers ordered by their email addresses.
+
+
+### Queue Interface
+
+ArrayDeque -> Deque is short for double ended queue - two ends, front and back. It's a linear collection of elements that supports element insertion and removal at both ends. It's like a stack and a queue combined.
+
+PriorityQueue—A priority queue is an abstract data type that operates like a queue or stack, but where the order of retrieval is based on the priority of the items in the queue. The item with the highest priority is retrieved first. 
+
+```java
+package collections;
+
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class QueueDemo {
+    public static void show(){
+        Queue<String> queue = new ArrayDeque<>(); // FIFO
+        queue.add("c");
+        queue.add("a");
+        queue.add("b");
+        // b -> a -> c
+//        var front = queue.remove(); // removes the element at the front of the queue, but throws an exception if the queue is empty.
+        var front = queue.poll(); // removes the element at the front of the queue, but return null if the queue is empty.
+//        var front = queue.peek();// returns the element at the front of the queue, but does not remove it.
+//        var front = queue.element(); // returns the element at the front of the queue, but throws an exception if the queue is empty.
+        System.out.println(front);
+        System.out.println(queue);
+
+
+//        queue.offer("d"); // returns false if queue is full, the difference between add and offer is that add throws an exception if the queue is full.
+        // d -> b -> a -> c   (c at the front)
+    }
+}
+
+```
+
+### Set Interface
+
+No duplicates, no order
+
+```java
+package collections;
+
+import java.util.*;
+
+public class SetDemo {
+    public static void show() {
+        Set<String> set1 = new HashSet<>(Arrays.asList("a", "b", "c"));
+        Set<String> set2 = new HashSet<>(Arrays.asList("b", "c", "d"));
+
+        // Union
+//        set1.addAll(set2);
+//        System.out.println(set1); 
+
+        // Intersection
+//        set1.retainAll(set2);
+//        System.out.println(set1);
+
+        // Difference
+        set1.removeAll(set2);
+        System.out.println(set1);
+
+//        Collection<String> collection = new ArrayList<>();
+//        Collections.addAll(collection, "a", "b", "c", "c");
+//        Set<String> set = new HashSet<>(collection);
+//        System.out.println(set);
+
+//        Set<String> set = new HashSet<>();
+//        set.add("sky");
+//        set.add("is");
+//        set.add("blue");
+//        set.add("blue");
+//        System.out.println(set);
+        // no order, no duplicates
+    }
+}
+
+```
+
+### Map Interface
+
+* **Map** - The `Map` interface represents a collection of key-value pairs. It does not extend the `Collection` interface.
+* **HashMap** - The `HashMap` class implements the `Map` interface using a hash table. It provides constant-time performance for basic operations and does not guarantee the order of elements.
+* **TreeMap** - The `TreeMap` class implements the `Map` interface using a red-black tree. It orders elements based on their natural ordering or a custom comparator.
+* **LinkedHashMap** - The `LinkedHashMap` class extends `HashMap` and maintains the order of elements based on their insertion order or access order.
+
+- Map is not iterable
+* ![img_62.png](img_62.png)
+
+```java
+package collections;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class MapDemo {
+    public static void show(){
+        var c1 = new Customer("a", "e1");
+        var c2 = new Customer("b", "e2");
+        Map<String, Customer> map = new HashMap<>();
+        map.put(c1.getEmail(), c1);
+        map.put(c2.getEmail(), c2);
+
+//        map.replace("e1", new Customer("a++", "e1"));
+//        var unknown = new Customer("Unknown", "");
+//        var exists = map.containsKey("e10");
+//        var customer = map.getOrDefault("e10", unknown);
+//        var customer = map.get("e1"); // a1 - 0(1)
+//        System.out.println(map);
+
+        // Key
+        for (var key: map.keySet())
+            System.out.println(key);
+
+        // Key and value
+        for (var entry :map.entrySet())
+            System.out.println(entry);      // entry.getKey() - for only key , entry.getValue() -for only value
+
+        // Values but order is not guaranteed
+        for (var customer: map.values())
+            System.out.println(customer); // cannot assure the order
+
+        // Map is not iterable
+        // Java: Maps
+        // C#: Dictionary
+        // Python: Dictionary
+        // JavaScript: Objects
+        // var person = {name: "Mosh"}; // basically its a hash table
+
+//        List<Customer> customers = new ArrayList<>();
+
+//        // TO find an email of customer - O(n)
+//        for (var customer: customers)
+//            if (customer.getEmail() == "e1")
+//                System.out.println("Found");
+//        To the rescue HashTables there
+    }
+}
+
+```
+
+### Summary - Collection
+
+![img_64.png](img_64.png)
+
+Collection - The `Collection` interface is the root interface for all collection classes. It provides a way to iterate over the elements of a collection.
+List - The `List` interface extends `Collection` and represents an ordered collection of elements. It allows duplicate elements and provides methods to access elements by index.
+Queue - The `Queue` interface extends `Collection` and represents a collection of elements in a specific order. It provides methods for adding, removing, and inspecting elements. FIFO queues are common implementations of the `Queue` interface.
+Set - The `Set` interface extends `Collection` and represents a collection of unique elements. It does not allow duplicate elements.
+Map - The `Map` interface represents a collection of key-value pairs. It does not extend the `Collection` interface. It allows faster searching for elements based on a key.
+
+
+
+# Lambda Expressions and Functional Interfaces
+
+- **Lambda Expressions**: Lambda expressions provide a concise way to represent an anonymous function. They are commonly used to define inline implementations of functional interfaces.
+
+![img_65.png](img_65.png)
+
+## Functional Interfaces
+
+ An interface that contains **single abstract method**. It can have multiple default or static methods, but only one abstract method.
+
+[//]: # ()
+[//]: # ()
+[//]: # (Extra NOTE:     )
+
+[//]: # (* List is an interface)
+
+[//]: # (* ArrayList is a class that implements List interface)
+
+[//]: # (* List is an ordered collection of elements)
+
+[//]: # (* List allows duplicate elements)
+
+[//]: # (* List allows multiple null elements)
+
+[//]: # (* List allows elements to be inserted or accessed by their position in the list)
+
+[//]: # (* List allows elements to be added to the end of the list, inserted in the middle of the list, or removed from any position in the list)
+
+[//]: # (* List is a generic type. We can specify the type of elements that a list can contain)
+
+[//]: # (* List is an interface. We can't create an instance of an interface. We need to create an instance of a class that implements the interface)
+
+[//]: # (* ArrayList is a class that implements List interface)
+
+[//]: # (* ArrayList is a resizable array. It's like an array, but it can grow in size)
+
+[//]: # (* ArrayList is a generic type. We can specify the type of elements that an ArrayList can contain)
+
+[//]: # (* ArrayList is a class. We can create an instance of ArrayList)
+
+[//]: # (* ArrayList is part of java.util package)
+
+[//]: # (* ArrayList is not synchronized. If multiple threads access an ArrayList concurrently, and at least one of the threads modifies the list structurally, it must be synchronized externally)

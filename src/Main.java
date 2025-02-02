@@ -1,13 +1,16 @@
-import exceptions.ExceptionsDemo;
+import collections.*;
+import generics.GenericList;
+import generics.Instructor;
+import generics.User;
+import generics.Utils;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        try {
-            ExceptionsDemo.show();
-        } catch (Throwable e) {
-            System.out.println("An unexpected error occurred");
-        }
+        MapDemo.show();
     }
 }
+
