@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Client code
 public class Main {
     public static void main(String[] args) {
-        StreamsDemo.show();
+//        StreamsDemo.show();
     }
 }
 
