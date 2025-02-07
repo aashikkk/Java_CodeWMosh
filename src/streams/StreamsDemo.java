@@ -1,23 +1,23 @@
 package streams;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class StreamsDemo {
     public static void show(){
-        var movies = List.of(
-                new Movie("a", 10),
-                new Movie("b", 30),
-                new Movie("c", 20)
-        );
+        IntStream
+//                .range(1,5) // 1,2,3,4
+                .rangeClosed(1,5) // 1,2,3,4,5
+                .forEach(System.out::println);
 
-//        movies.stream()
-//                .takeWhile(m -> m.getLikes() < 30) // it will stop when it finds the first movie with likes >= 30
-//                .forEach(m -> System.out.println(m.getTitle()));
-//
-        movies.stream()
-                .dropWhile(m -> m.getLikes() < 30) // skip elements as long as the condition is true. Once it encounters an element where the condition is false, it stops skipping and includes the rest of the elements
-                .forEach(m -> System.out.println(m.getTitle()));
+
     }
 }

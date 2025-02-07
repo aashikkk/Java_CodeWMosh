@@ -118,6 +118,20 @@
       13. [Unary Operator Interface](#unary-operator)
       14. [Summary](#summary---lambdas)
    5. [Streams](#streams)
+      1. [Creating Streams](#creating-streams)
+      2. [Mapping Elements](#mapping-elements)
+      3. [Filtering Elements](#filtering-elements)
+      4. [Slicing Streams](#slicing-streams)
+      5. [Sorting Streams](#sorting-streams)
+      6. [Getting Unique Elements](#getting-unique-elements)
+      7. [Peeking Elements](#peeking-elements)
+      8. [Simple Reducers](#simple-reducers)
+      9. [Reducing a Stream](#reducing-a-stream)
+      10. [Collectors](#collectors)
+      11. [Grouping Elements](#grouping-elements-)
+      12. [Partitioning Elements](#partitioning-elements)
+      13. [Primitive Type Streams](#primitive-type-streams)
+      14. [Summary](#summary---streams)
    
 
 
@@ -6301,6 +6315,571 @@ public class StreamsDemo {
     }
 }
 ```
+
+### Sorting Streams
+
+Sorting streams in Java allows you to arrange the elements of a stream in a specific order. This is achieved using the `sorted` method of the `Stream` interface. The `sorted` method can be used in two ways:
+
+1. **Natural Order**: Sorts the elements in their natural order. The elements must implement the `Comparable` interface.
+2. **Custom Order**: Sorts the elements using a custom comparator.
+
+### Example
+
+#### Natural Order
+
+```java
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StreamsDemo {
+    public static void show() {
+        var numbers = List.of(3, 1, 4, 1, 5, 9);
+        var sortedNumbers = numbers.stream()
+                                   .sorted()
+                                   .collect(Collectors.toList());
+        System.out.println(sortedNumbers);
+    }
+
+    public static void main(String[] args) {
+        show();
+    }
+}
+
+// class Movie implements Comparable<Movie>
+```
+
+#### Custom Order
+
+```java
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StreamsDemo {
+    public static void show() {
+        var movies = List.of(
+            new Movie("a", 20),
+            new Movie("b", 25),
+            new Movie("c", 35)
+        );
+
+        var sortedMovies = movies.stream()
+                                 .sorted(Comparator.comparing(Movie::getTitle))
+                                 .collect(Collectors.toList());
+
+        sortedMovies.forEach(m -> System.out.println(m.getTitle()));
+    }
+
+    public static void main(String[] args) {
+        show();
+    }
+}
+```
+
+### Explanation
+
+- **Natural Order**: The `sorted` method without arguments sorts the elements in their natural order.
+- **Custom Order**: The `sorted` method with a `Comparator` argument sorts the elements based on the custom comparator. In this example, the movies are sorted by their titles using `Comparator.comparing(Movie::getTitle)`.
+
+Ex2:
+```java
+package streams;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 20),
+                new Movie("b", 25),
+                new Movie("c", 35)
+        );
+
+        movies.stream()
+                .sorted(Comparator.comparing(Movie::getTitle).reversed()) // sort reverse
+                .forEach(m -> System.out.println(m.getTitle()));
+
+//        movies.stream()
+//                .sorted((a,b) -> a.getTitle().compareTo(b.getTitle())) // m1
+//                .sorted(Comparator.comparing(m -> m.getTitle())) //m2
+//                .forEach(m -> System.out.println(m.getTitle()));
+
+
+//                .sorted(Comparator.comparing(Movie::getTitle) // sort ascending
+    }
+}
+```
+
+### Getting Unique Elements
+
+distinct—Returns a stream consisting of the distinct elements of this stream.
+
+```java
+package streams;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 20),
+                new Movie("b", 25),
+                new Movie("c", 35)
+        );
+
+        movies.stream()
+                .map(Movie::getTitle)
+                .distinct() // for unique 
+                .forEach(System.out::println);
+    }
+}
+
+```
+
+
+### Peeking Elements
+
+Peek - Returns a stream consisting of the elements of this stream, additionally performing the provided action on each element as elements are consumed from the resulting stream. Processing pipeline elements as they are consumed.
+
+- Useful for troubleshooting problems in the stream pipeline
+```java
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 20),
+                new Movie("c", 30)
+        );
+
+        // get title of > 10
+        movies.stream()
+                .filter(m -> m.getLikes() > 10)
+                .peek(m -> System.out.println("Filtered: " + m.getTitle()))
+                .map(m -> m.getTitle())
+                .peek(t -> System.out.println("Mapped: " + t))
+                .forEach(System.out::println);
+    }
+} 
+```
+Build and customiza our processing pipeline
+![img_74.png](img_74.png)
+
+
+### Simple reducers
+
+Simple reducers in Java Streams are operations that reduce the elements of a stream to a single value. Here are some common simple reducers:
+
+1. **Count**: Returns the count of elements in the stream.
+2. **Match**: Checks if any, all, or none of the elements match a given predicate.
+3. **Find**: Finds the first or any element in the stream that matches a given condition.
+4. **Max/Min**: Finds the maximum or minimum element in the stream based on a comparator.
+
+### Example
+
+```java
+import java.util.List;
+import java.util.Comparator;
+
+public class StreamsDemo {
+    public static void show() {
+        var movies = List.of(
+            new Movie("a", 10),
+            new Movie("b", 20),
+            new Movie("c", 30)
+        );
+
+        // Count
+        long count = movies.stream().count();
+        System.out.println("Count: " + count);
+
+        // Match
+        boolean anyMatch = movies.stream().anyMatch(m -> m.getLikes() > 20);
+        boolean allMatch = movies.stream().allMatch(m -> m.getLikes() > 20);
+        boolean noneMatch = movies.stream().noneMatch(m -> m.getLikes() > 40);
+        System.out.println("Any Match: " + anyMatch);
+        System.out.println("All Match: " + allMatch);
+        System.out.println("None Match: " + noneMatch);
+
+        // Find
+        var firstMovie = movies.stream().findFirst().orElse(null);
+        var anyMovie = movies.stream().findAny().orElse(null);
+        System.out.println("First Movie: " + (firstMovie != null ? firstMovie.getTitle() : "None"));
+        System.out.println("Any Movie: " + (anyMovie != null ? anyMovie.getTitle() : "None"));
+
+        // Max/Min
+        var maxLikesMovie = movies.stream().max(Comparator.comparing(Movie::getLikes)).orElse(null);
+        var minLikesMovie = movies.stream().min(Comparator.comparing(Movie::getLikes)).orElse(null);
+        System.out.println("Max Likes Movie: " + (maxLikesMovie != null ? maxLikesMovie.getTitle() : "None"));
+        System.out.println("Min Likes Movie: " + (minLikesMovie != null ? minLikesMovie.getTitle() : "None"));
+    }
+
+    public static void main(String[] args) {
+        show();
+    }
+}
+```
+
+### Explanation
+- **Count**: Counts the number of elements in the stream.
+- **Match**: Checks if any, all, or none of the elements match the given predicate.
+- **Find**: Finds the first or any element in the stream.
+- **Max/Min**: Finds the element with the maximum or minimum value based on the comparator.
+
+All operations are terminal operations, we can't call any other operation after these operations
+
+Predicate means a function that returns a boolean value. It takes one argument and returns a boolean value. It is used to filter data.
+
+```java
+package streams;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+public class StreamsDemo {
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 20),
+                new Movie("c", 30)
+        );
+
+        var result = movies.stream()
+                .max(Comparator.comparing(Movie::getLikes))
+//                .findAny()
+//                .findFirst()
+                .get();  
+
+        System.out.println(result.getTitle());
+
+
+//        var result = movies.stream()
+//                .noneMatch(m -> m.getLikes() > 20); // none should be matched
+//                .allMatch(m -> m.getLikes() > 20); // each should be matched
+//                .anyMatch(m -> m.getLikes() > 40); // any match
+//        System.out.println(result);
+
+
+    }
+}
+```
+
+### Reducing a Stream
+
+```java
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 20),
+                new Movie("c", 30)
+        );
+
+        // [10, 20, 30]
+        // [30, 30]
+        // [60]
+        // Integer.sum = (a,b) -> a + b
+
+//        Optional<Integer> sum = movies.stream()
+//                .map(Movie::getLikes)
+//                .reduce(Integer::sum);
+
+//        System.out.println(sum.orElse(0)); // orElse is used to avoid null pointer exception Instead of get.
+        // But we have another method taking 2 params where we can pass default value that will return int.
+
+        Integer sum = movies.stream()
+                .map(Movie::getLikes)
+                .reduce(0, Integer::sum);
+
+        System.out.println(sum);
+    }
+
+```
+
+### Collectors
+
+```java
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10),
+                new Movie("b", 20),
+                new Movie("c", 30)
+        );
+
+
+        var result = movies.stream()
+                .filter(m-> m.getLikes() > 10)
+                .map(Movie::getTitle)
+                .collect(Collectors.joining(", ")); // b,c
+//                .collect(Collectors.summarizingInt(Movie::getLikes)); // Summary stats
+//                .collect(Collectors.summingDouble(Movie::getLikes)); // another method to sum
+
+        // key (title)
+        // value (likes)
+
+        // Same
+//                .collect(Collectors.toMap(Movie::getTitle, m-> m)); // not really good to get object as value
+//                .collect(Collectors.toMap(Movie::getTitle, Function.identity())); // much better
+
+//                .collect(Collectors.toMap(Movie::getTitle, Movie::getLikes)); // {a=10, b=20, c=30}
+//                .collect(Collectors.toList()) // Collectors.toList() returns a list of movies
+
+        System.out.println(result);
+    }
+```
+
+### Grouping Elements 
+
+Grouping elements in Java Streams allows you to collect elements of a stream into a `Map` based on a classifier function. This is achieved using the `Collectors.groupingBy` method. The classifier function determines the key under which each element is grouped.
+
+### Key Points:
+- **Classifier Function**: A function that determines the key for each element.
+- **Downstream Collector**: An optional collector to perform further reduction on the values associated with a given key.
+
+### Example
+
+Here is an example demonstrating how to group elements by a specific attribute:
+
+```java
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class StreamsDemo {
+    public static void show() {
+        var movies = List.of(
+                new Movie("a", 10, Genre.THRILLER),
+                new Movie("b", 20, Genre.ACTION),
+                new Movie("c", 30, Genre.ACTION)
+        );
+
+        // Group movies by genre
+        Map<Genre, List<Movie>> moviesByGenre = movies.stream()
+                .collect(Collectors.groupingBy(Movie::getGenre));
+
+        System.out.println(moviesByGenre);
+    }
+}
+```
+
+### Explanation
+- **Classifier Function**: `Movie::getGenre` is used to classify movies by their genre.
+- **Result**: The result is a `Map` where the keys are genres and the values are lists of movies belonging to those genres.
+
+You can also use a downstream collector to perform further reduction on the grouped elements. For example, counting the number of movies in each genre:
+
+```java
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class StreamsDemo {
+    public static void show() {
+        var movies = List.of(
+                new Movie("a", 10, Genre.THRILLER),
+                new Movie("b", 20, Genre.ACTION),
+                new Movie("c", 30, Genre.ACTION)
+        );
+
+        // Group movies by genre and count them
+        Map<Genre, Long> movieCountByGenre = movies.stream()
+                .collect(Collectors.groupingBy(Movie::getGenre, Collectors.counting()));
+
+        System.out.println(movieCountByGenre);
+    }
+}
+```
+
+### Explanation
+- **Downstream Collector**: `Collectors.counting()` is used to count the number of movies in each genre.
+- **Result**: The result is a `Map` where the keys are genres and the values are the counts of movies in those genres.
+
+```java
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10, Genre.THRILLER),
+                new Movie("b", 20, Genre.ACTION),
+                new Movie("c", 30, Genre.ACTION)
+        );
+
+        // group by genre
+        var result = movies.stream()
+                .collect(Collectors.groupingBy(Movie::getGenre,
+//                        Collectors.counting();  // 2nd parameter is a collector
+                        Collectors.mapping(
+                        Movie::getTitle,
+                        Collectors.joining(", "))));
+
+        System.out.println(result);
+    }
+
+```
+
+### Partitioning Elements
+
+Partitioning elements in Java Streams allows you to divide the elements of a stream into two groups based on a predicate. This is achieved using the `Collectors.partitioningBy` method. The result is a `Map` with a Boolean key, where `true` represents elements that match the predicate and `false` represents elements that do not.
+
+### Key Points:
+- **Predicate**: A function that determines the condition for partitioning.
+- **Downstream Collector**: An optional collector to perform further reduction on the values associated with each partition.
+
+### Example
+
+Here is an example demonstrating how to partition elements based on a specific condition:
+
+```java
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class StreamsDemo {
+    public static void show() {
+        var movies = List.of(
+                new Movie("a", 10, Genre.THRILLER),
+                new Movie("b", 20, Genre.ACTION),
+                new Movie("c", 30, Genre.ACTION)
+        );
+
+        // Partition movies by likes > 20
+        Map<Boolean, List<Movie>> partitionedMovies = movies.stream()
+                .collect(Collectors.partitioningBy(m -> m.getLikes() > 20));
+
+        System.out.println(partitionedMovies);
+    }
+}
+```
+
+### Explanation
+- **Predicate**: `m -> m.getLikes() > 20` is used to partition movies based on whether their likes are greater than 20.
+- **Result**: The result is a `Map` where the key `true` contains movies with likes greater than 20, and the key `false` contains movies with likes less than or equal to 20.
+
+You can also use a downstream collector to perform further reduction on the partitioned elements. For example, collecting the titles of movies in each partition:
+
+```java
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class StreamsDemo {
+    public static void show() {
+        var movies = List.of(
+                new Movie("a", 10, Genre.THRILLER),
+                new Movie("b", 20, Genre.ACTION),
+                new Movie("c", 30, Genre.ACTION)
+        );
+
+        // Partition movies by likes > 20 and collect titles
+        Map<Boolean, String> partitionedMovies = movies.stream()
+                .collect(Collectors.partitioningBy(m -> m.getLikes() > 20,
+                        Collectors.mapping(Movie::getTitle, Collectors.joining(", "))));
+
+        System.out.println(partitionedMovies);
+    }
+}
+```
+
+### Explanation
+- **Downstream Collector**: `Collectors.mapping(Movie::getTitle, Collectors.joining(", "))` is used to collect the titles of movies in each partition.
+- **Result**: The result is a `Map` where the key `true` contains a comma-separated string of titles of movies with likes greater than 20, and the key `false` contains a comma-separated string of titles of movies with likes less than or equal to 20.
+
+```java
+    public static void show(){
+        var movies = List.of(
+                new Movie("a", 10, Genre.THRILLER),
+                new Movie("b", 20, Genre.ACTION),
+                new Movie("c", 30, Genre.ACTION)
+        );
+
+        // partition by > 20 likes
+        var result = movies.stream().
+                collect(Collectors.partitioningBy(m -> m.getLikes() > 20, 
+                        Collectors.mapping(Movie::getTitle, 
+                                           Collectors.joining(", "))));
+
+        System.out.println(result);
+    }
+```
+
+###  Primitive Type Streams
+
+![img_75.png](img_75.png)
+
+Primitive type streams in Java are specialized streams for handling primitive data types such as `int`, `long`, and `double`. These streams are more efficient than their object counterparts because they avoid the overhead of boxing and unboxing operations. Java provides three specialized stream interfaces for primitive types:
+
+1. **IntStream**: For `int` values.
+2. **LongStream**: For `long` values.
+3. **DoubleStream**: For `double` values.
+
+### Key Points:
+- **Efficiency**: Primitive type streams are more efficient than streams of boxed primitives.
+- **Specialized Methods**: They provide specialized methods for common operations like `sum()`, `average()`, `min()`, `max()`, etc.
+- **Range Methods**: They include methods to generate ranges of values (`range()`, `rangeClosed()`).
+
+### Example
+
+Here is an example demonstrating the use of `IntStream`:
+
+```java
+import java.util.stream.IntStream;
+
+public class PrimitiveStreamsDemo {
+    public static void show() {
+        // Generate a range of int values
+        IntStream.range(1, 5) // 1, 2, 3, 4
+                 .forEach(System.out::println);
+
+        // Generate a range of int values (inclusive)
+        IntStream.rangeClosed(1, 5) // 1, 2, 3, 4, 5
+                 .forEach(System.out::println);
+
+        // Sum of a range of int values
+        int sum = IntStream.rangeClosed(1, 5).sum();
+        System.out.println("Sum: " + sum);
+
+        // Average of a range of int values
+        double average = IntStream.rangeClosed(1, 5).average().orElse(0);
+        System.out.println("Average: " + average);
+    }
+
+    public static void main(String[] args) {
+        show();
+    }
+}
+```
+
+### Explanation
+- **`IntStream.range(1, 5)`**: Generates a stream of `int` values from 1 to 4.
+- **`IntStream.rangeClosed(1, 5)`**: Generates a stream of `int` values from 1 to 5 (inclusive).
+- **`sum()`**: Calculates the sum of the stream elements.
+- **`average()`**: Calculates the average of the stream elements.
+
+```java
+    public static void show(){
+        IntStream
+//                .range(1,5) // 1,2,3,4
+                .rangeClosed(1,5) // 1,2,3,4,5
+                .forEach(System.out::println);
+
+        
+    }
+
+```
+### Summary - Streams
+
+**Streams**—To process a collection of data in a declarative way
+**Mapping** - Transforming elements of a stream
+**Filtering** - Selecting elements based on a condition
+**Slicing** - Extracting a subset of elements
+**Sorting** - Arranging elements in a specific order
+**Reducing** - Combining elements into a single value
+**Collectors** - Collecting elements into a collection
+
 
 
 [//]: # ()
