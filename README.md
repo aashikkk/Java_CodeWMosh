@@ -96,12 +96,13 @@
       2. [Iterator Interface](#iterator-interface)
       3. [Collection Interface](#collection-interface)
       4. [List Interface](#list-interface)
-      5. [Comparable Interface](#comparable-interface)
-      6. [Comparator Interface](#comparator-interface)
-      7. [Queue Interface](#queue-interface)
-      8. [Set Interface](#set-interface)
-      9. [Map Interface](#map-interface)
-      10. [Summary](#summary---collection)
+      5. [Java List and ArrayList](#java-list-and-arraylist)
+      6. [Comparable Interface](#comparable-interface)
+      7. [Comparator Interface](#comparator-interface)
+      8. [Queue Interface](#queue-interface)
+      9. [Set Interface](#set-interface)
+      10. [Map Interface](#map-interface)
+      11. [Summary](#summary---collection)
    4. [Lambda Expressions and Functional Interface](#lambda-expressions-and-functional-interfaces)
       1. [Functional Interfaces](#functional-interfaces)
       2. [Variable Capture](#variable-capture)
@@ -132,8 +133,7 @@
       12. [Partitioning Elements](#partitioning-elements)
       13. [Primitive Type Streams](#primitive-type-streams)
       14. [Summary](#summary---streams)
-   
-
+   15. [Concurrency and Multi threading](#concurrency-and-multi-threading)
 
 
 # Fundamentals
@@ -5274,6 +5274,22 @@ public class ListDemo {
 
 ```
 
+## Java List and ArrayList
+
+## List (Interface)
+- Represents an **ordered collection** of elements.
+- Allows **duplicate elements** and **multiple null values**.
+- Elements can be **inserted, accessed, or removed** by position.
+- **Cannot be instantiated directly** (must use a class that implements it).
+
+## ArrayList (Class)
+- Implements the **List interface**.
+- **Resizable array** that can **grow dynamically**.
+- Supports **generic types** to specify the element type.
+- Part of the **`java.util` package**.
+- **Not synchronized**, requiring external synchronization in multi-threaded environments.
+
+
 ### Comparable Interface
 
 ```java
@@ -6881,37 +6897,899 @@ public class PrimitiveStreamsDemo {
 **Collectors** - Collecting elements into a collection
 
 
+# Concurrency and Multi threading
+![img_76.png](img_76.png)
 
-[//]: # ()
-[//]: # ()
-[//]: # (Extra NOTE:     )
+## Processes and Threads
+**Process** - instance of a program or an application. When you launch an application, OS load application inside process.
+Process contain image of the application. It contains code, data, stack, heap,(memory) and other resources.
 
-[//]: # (* List is an interface)
+![img_77.png](img_77.png)
+You can run anti-virus while playing music - CONCURRENCY AT Process level
 
-[//]: # (* ArrayList is a class that implements List interface)
+Have concurrency within the process level - THREADS
+Technically, THREADS is sequence of instructions. 
 
-[//]: # (* List is an ordered collection of elements)
+Each process has atleast one thread called Main thread. Main thread is responsible for executing the main method. We can create multiple threads to run tasks concurrently..
 
-[//]: # (* List allows duplicate elements)
+![img_78.png](MultiThreading) - Within one process, we have 3 threads running concurrently.
+Application uses multiple threads called MULTI-THREADING Applications. 
 
-[//]: # (* List allows multiple null elements)
+These days, most processes have multiple cores, these cores can be used to running many processes or threads.
+If your application does not use threads, it will only use one of the processes or cores. It's not utilizing the power of the CPU, your hardware is wasted.
 
-[//]: # (* List allows elements to be inserted or accessed by their position in the list)
+![img_79.png](threadsCount.png)
 
-[//]: # (* List allows elements to be added to the end of the list, inserted in the middle of the list, or removed from any position in the list)
+To exploit the parallel hardware, you should learn about threads.
+1. How to start
+2. How to pause
+3. How to interrupt
+4. How to safely share data between threads
 
-[//]: # (* List is a generic type. We can specify the type of elements that a list can contain)
+Because when we share data between threads, Crazy things can happen
 
-[//]: # (* List is an interface. We can't create an instance of an interface. We need to create an instance of a class that implements the interface)
+### Starting a thread
 
-[//]: # (* ArrayList is a class that implements List interface)
+https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html
 
-[//]: # (* ArrayList is a resizable array. It's like an array, but it can grow in size)
+```java
+// DownloadFileTask.java
+package concurrency;
 
-[//]: # (* ArrayList is a generic type. We can specify the type of elements that an ArrayList can contain)
+public class DownloadFileTask implements Runnable{
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+        // After run, you don't have to kill explicitly; it will be die after execution
+    }
+}
 
-[//]: # (* ArrayList is a class. We can create an instance of ArrayList)
+// ThreadDemo.java
+package concurrency;
 
-[//]: # (* ArrayList is part of java.util package)
+public class ThreadDemo {
+    public static void show(){
+        System.out.println(Thread.currentThread().getName());
 
-[//]: # (* ArrayList is not synchronized. If multiple threads access an ArrayList concurrently, and at least one of the threads modifies the list structurally, it must be synchronized externally)
+        Thread thread = new Thread(new DownloadFileTask());
+        thread.start();
+    }
+}
+
+// --Output--
+// main
+// Downloading a file: Thread-0
+```
+ 
+We will try to download 10 file concurrently using loop.
+![img_78.png](img_78.png)
+
+These threads running in parallel even in terminal we can see separate commands.
+
+### Pausing a thread
+
+Sleep method is used to pause a thread for a specific amount of time. It's a static method, so we can call it directly on the Thread class.
+
+```java
+// DownloadFileTask.java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+        // If you have single threaded app, it will take 50 seconds to download 10 files, while this will take 5 seconds.
+    }
+}
+
+
+// ThreadDemo.java
+package concurrency;
+
+public class ThreadDemo {
+    public static void show(){
+        System.out.println(Thread.currentThread().getName());
+
+        for (int i = 0;i < 10; i++) {
+            Thread thread = new Thread(new DownloadFileTask());
+            thread.start();
+        }
+    }
+}
+```
+What if you try to download 100 or 1000 files concurrently, My machine has 4 cores and 8 threads available. Then How it's gonna work ??
+
+JVM has a thread scheduler, it will decide which thread to run at any given time. It will run 4 threads at a time, and then it will pause them and run another 4 threads. This is called context switching.  
+
+### Joining a thread
+
+Join method is used to wait for a thread to complete. It's a instance method, so we can call it on a specific thread.
+
+```java
+// ThreadDemo.java
+package concurrency;
+
+public class ThreadDemo {
+    public static void show(){
+        Thread thread = new Thread(new DownloadFileTask());
+        thread.start();
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("File is ready to be scanned.");
+    }
+}
+
+// DownloadFileTask.java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+    }
+}
+
+```
+There is a better way to do this without waiting the thread to complete. We can use ExecutorService.
+
+### Interrupting a thread
+
+```java
+// DownloadFileTask.java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        for (var i = 0; i < Integer.MAX_VALUE; i++){
+            if (Thread.currentThread().isInterrupted()) return;
+            System.out.println("Downloading byte " + i);
+        }
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+    }
+}
+
+// ThreadDemo.java
+package concurrency;
+
+public class ThreadDemo {
+    public static void show(){
+        Thread thread = new Thread(new DownloadFileTask());
+        thread.start();
+
+        try {
+            thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        thread.interrupt(); // to call this we have to check if the thread is interrupted in the run method
+    }
+}
+```
+
+### Concurrency Issues
+
+Concurrency issues arise when multiple threads access shared resources simultaneously, leading to unpredictable behavior and potential errors. Here are some common concurrency issues:
+1. **Race Conditions**
+
+   A race condition occurs when the outcome of a program depends on the sequence or timing of uncontrollable events such as thread execution order. This can lead to inconsistent or incorrect results.
+
+When two or more threads are trying to modify the same resource - **RACE CONDITON**
+![Race.png](RaceCondition.png)
+
+When one thread changes the shared data and that is not visible to other thread - **VISIBILITY PROBLEM**
+![VisibilityCond.png](VisibilityCond.png)
+
+When you trying to do multi threaded app, you have to know the issues and how to prevent them.
+
+**Thread-safe Code** - you have to write code in such a way that it can be executed by multiple threads concurrently without causing any issues.
+
+#### `DownloadStatus.java`
+```java
+package concurrency;
+
+public class DownloadStatus {
+    private int totalBytes;
+
+    public int getTotalBytes() {
+        return totalBytes;
+    }
+
+    public void incrementTotalBytes(){
+        totalBytes++;
+        // 1. the value of this field read from the main memory and stored in the CPU
+        // 2. CPU is gonna increment this value
+        // 3. and then updated value is stored back in the main memory
+        // Call this as non-atomic operation,
+        // In contrast, atomic operations is like an atom, we cannot break it down as many steps
+    }
+}
+```
+#### `DownloadFileTask.java`
+```java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    private DownloadStatus status;
+
+    public DownloadFileTask(DownloadStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        for (var i = 0; i < 10_000; i++){
+            if (Thread.currentThread().isInterrupted()) return;
+            status.incrementTotalBytes();
+        }
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+    }
+}
+
+```
+
+#### `ThreadDemo.java`
+```java
+package concurrency;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ThreadDemo {
+    public static void show(){
+        var status = new DownloadStatus();
+
+        List<Thread> threads = new ArrayList<>();
+
+        for (int i = 0; i < 10;i++){
+            var thread = new Thread(new DownloadFileTask(status));
+            thread.start();
+//            thread.join();  // cannot use this because main thread wait for each download to finish, it's a blocking method
+            threads.add(thread); // every iteration it will add thread to list
+        }
+
+        // another for loop to join the all threads
+        for (var thread: threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        System.out.println(status.getTotalBytes()); // 32xxx - racing condition, all threads trying to update one instance
+    }
+}
+
+```
+
+![img_79.png](UnderTheHood.png)
+It should be 2, instead of 1
+
+Ex2:
+```java
+public class Counter {
+    private int count = 0;
+
+    public void increment() {
+        count++;
+    }
+
+    public int getCount() {
+        return count;
+    }
+}
+
+public class RaceConditionDemo {
+    public static void main(String[] args) {
+        Counter counter = new Counter();
+        Runnable task = () -> {
+            for (int i = 0; i < 1000; i++) {
+                counter.increment();
+            }
+        };
+
+        Thread thread1 = new Thread(task);
+        Thread thread2 = new Thread(task);
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Final count: " + counter.getCount());
+    }
+}
+```
+
+### Strategies for Thread Safety
+
+![img_80.png](StrategiesThreadSafety.png)
+
+**Confinement** - Each thread has its own copy of the data. This is the simplest and most effective way to ensure thread safety.
+
+![img_79.png](SharingOneInstanceToAll.png)
+![img_80.png](HaveOwnDataForEach.png)
+
+When all tasks are complete, we can combine the results
+
+**Immutability** - Make the shared data immutable. If the data cannot be changed, there is no need to worry about thread safety.
+
+**Synchronization** - Use synchronization to ensure that only one thread can access the shared resource at a time. This can be done using the `synchronized` keyword or using locks.
+
+![img_79.png](img_79.png) 
+1. One thread at a time can access the shared resource
+2. Other threads have to wait
+3. When the thread is done, it releases the lock and another thread can access the resource
+4. Synchronization is force to run sequentially, which is against the idea of concurrency + implementing synchronization is challenging and error-prone. 
+
+**Deadlock** - A situation where two or more threads are waiting for each other to release the lock, causing all threads to be blocked indefinitely. 
+In a nutshell, wait for each other indefinitely and cause deadlock and led to crash. Avoid using synchronization as much as possible.
+
+![img_80.png](Deadlock.png)
+
+**Atomic Objects** - Use atomic objects from the `java.util.concurrent.atomic` package. These objects provide atomic operations that are thread-safe without the need for synchronization.
+
+**Partitioning** - Divide the shared resource into smaller parts and assign each part to a different thread. This can reduce contention and improve performance.
+
+![img_80.png](Partitioning.png
+
+### Confinement
+
+Idea: Use own data for each thread
+
+Confinement is a strategy for achieving thread safety by ensuring that data is only accessible by a single thread. This can be done by keeping the data local to the thread, so no other thread can access or modify it. This approach eliminates the need for synchronization and avoids concurrency issues such as race conditions and deadlocks.
+
+### Key Points:
+- **Thread-Local Storage**: Each thread has its own copy of the data.
+- **No Shared State**: Data is not shared between threads, preventing concurrent access issues.
+- **Simpler Code**: No need for synchronization mechanisms, making the code simpler and less error-prone.
+
+
+```java
+// DownloadFileTask.java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    private DownloadStatus status;
+
+    public DownloadFileTask() {
+        this.status = new DownloadStatus();
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        for (var i = 0; i < 10_000; i++){
+            if (Thread.currentThread().isInterrupted()) return;
+            status.incrementTotalBytes();
+        }
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+    }
+
+    public DownloadStatus getStatus() {
+        return status;
+    }
+}
+
+// DownloadStatus.java
+package concurrency;
+
+public class DownloadStatus {
+    private int totalBytes;
+
+    public int getTotalBytes() {
+        return totalBytes;
+    }
+
+    public void incrementTotalBytes(){
+        totalBytes++;
+    }
+}
+
+// ThreadDemo.java
+package concurrency;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class ThreadDemo {
+    public static void show(){
+        List<Thread> threads = new ArrayList<>();
+        List<DownloadFileTask> tasks = new ArrayList<>();
+
+
+        for (int i = 0; i < 10;i++){
+            var task = new DownloadFileTask();
+            tasks.add(task);
+
+            var thread = new Thread(task);
+            thread.start();
+            threads.add(thread); // every iteration it will add thread to list
+        }
+
+        // another for loop to join the all threads
+        for (var thread: threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        Optional<Integer> totalBytes = tasks.stream()
+                .map(t -> t.getStatus().getTotalBytes())
+                .reduce(Integer::sum);
+        System.out.println(totalBytes);
+    }
+}
+
+```
+
+### Locks
+
+Locks are **synchronization** mechanisms used to control access to shared resources in concurrent programming. They ensure that only one thread can access a resource at a time, preventing race conditions and ensuring data consistency.
+    
+### Key Points:
+- **Mutual Exclusion**: Only one thread can hold the lock at a time, ensuring exclusive access to the shared resource.
+- **Lock Acquisition**: A thread must acquire the lock before accessing the shared resource.
+- **Lock Release**: The thread must release the lock after it is done with the resource, allowing other threads to acquire the lock.
+- **Reentrant Locks**: A type of lock that allows the thread holding the lock to re-acquire it without causing a deadlock.
+
+### Example
+
+Here is an example demonstrating the use of `ReentrantLock` in Java:
+
+
+#### `DownloadFileTask.java`
+```java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    private DownloadStatus status;
+
+    public DownloadFileTask(DownloadStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        for (var i = 0; i < 10_000; i++){
+            if (Thread.currentThread().isInterrupted()) return;
+            status.incrementTotalBytes();
+        }
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+    }
+
+    public DownloadStatus getStatus() {
+        return status;
+    }
+}
+
+```
+
+#### `DownloadStatus.java`
+```java
+package concurrency;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class DownloadStatus {
+    private int totalBytes;
+    private Lock lock = new ReentrantLock();
+
+    public int getTotalBytes() {
+        return totalBytes;
+    }
+
+    public void incrementTotalBytes(){
+        lock.lock(); // Acquire the lock (it's like lock the door after enter the hotel room)
+        try {
+            totalBytes++; // Critical Section ---for this totalBytes++ operation no need for try catch block, since increment operation will not cause an error. if we have multiple lines of code within we need to use try catch block definitely
+        }
+        finally {
+            lock.unlock(); // Release the lock (this should be in finally block to make sure it will be executed even if exception is)
+        }
+    }
+}
+```
+
+In this example:
+- **Lock Acquisition**: The `lock.lock()` method is called to acquire the lock before entering the critical section.
+- **Critical Section**: The code that modifies the shared resource (`totalBytes++`).
+- **Lock Release**: The `lock.unlock()` method is called in the `finally` block to ensure the lock is released even if an exception occurs.
+
+#### `ThreadDemo.java`
+```java
+package concurrency;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class ThreadDemo {
+    public static void show(){
+        List<Thread> threads = new ArrayList<>();
+        var status = new DownloadStatus();
+
+        for (int i = 0; i < 10;i++){
+            var thread = new Thread(new DownloadFileTask(status));
+            thread.start();
+            threads.add(thread); // every iteration it will add thread to list
+        }
+
+        // another for loop to join the all threads
+        for (var thread: threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println(status.getTotalBytes());
+    }
+}
+```
+
+### The synchronized keyword
+
+The `synchronized` keyword in Java is used to control access to a shared resource by multiple threads. It ensures that only one thread can execute a block of code or method at a time, preventing race conditions and ensuring data consistency.
+
+### Key Points:
+- **Mutual Exclusion**: Only one thread can execute a synchronized block or method at a time.
+- **Monitor Object**: Each synchronized block or method is associated with a monitor object. A thread must acquire the monitor before entering the synchronized block or method.
+- **Intrinsic Locks**: Every object in Java has an intrinsic lock (or monitor lock) associated with it.
+
+### Usage:
+1. **Synchronized Method**: The entire method is synchronized on the instance (or class, for static methods) of the object.
+2. **Synchronized Block**: A specific block of code is synchronized on a specified object.
+
+### Example
+
+#### Synchronized Method
+```java
+public class Counter {
+    private int count = 0;
+
+    public synchronized void increment() {
+        count++;
+    }
+
+    public synchronized int getCount() {
+        return count;
+    }
+}
+```
+In this example, the `increment` and `getCount` methods are synchronized, ensuring that only one thread can execute them at a time.
+
+#### Synchronized Block
+```java
+public class Counter {
+    private int count = 0;
+    private final Object lock = new Object();
+
+    public void increment() {
+        synchronized (lock) {
+            count++;
+        }
+    }
+
+    public int getCount() {
+        synchronized (lock) {
+            return count;
+        }
+    }
+}
+```
+In this example, the `increment` and `getCount` methods use a synchronized block with a dedicated lock object, providing finer control over synchronization.
+
+### Considerations:
+- **Performance**: Synchronization can introduce overhead and reduce performance due to the blocking nature.
+- **Deadlocks**: Improper use of synchronization can lead to deadlocks, where two or more threads are waiting indefinitely for each other to release locks.
+- **Atomicity**: Synchronization ensures atomicity of the operations within the synchronized block or method.
+
+```java
+package concurrency;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class DownloadStatus {
+    private int totalBytes;
+    private int totalFiles;
+    private Object totalBytesLock = new Object();
+//    private Object totalFilesLock = new Object();
+
+
+    public void incrementTotalBytes(){
+        synchronized (totalBytesLock){
+            totalBytes++;
+        }
+    }
+
+    public synchronized void incrementTotalFiles(){
+            totalFiles++;
+    }
+
+    public int getTotalBytes() {
+        return totalBytes;
+    }
+
+    public int getTotalFiles() {
+        return totalFiles;
+    }
+}
+
+
+/*
+* public class DownloadStatus {
+    private int totalBytes;
+    private int totalFiles;
+
+
+    public void incrementTotalBytes(){
+        synchronized (this){
+            totalBytes++; // using this lock will work, but when we use multiple methods like incrementTotalFiles, this will share same montitor object, so it cannot monitor other one.
+        }
+    }
+
+    public void incrementTotalFiles(){
+        synchronized (this){
+            totalFiles++;
+        }
+    }
+
+    public int getTotalBytes() {
+        return totalBytes;
+    }
+
+    public int getTotalFiles() {
+        return totalFiles;
+    }
+}
+*
+* Here we have a class DownloadStatus with two fields totalBytes and totalFiles. We have two methods incrementTotalBytes and incrementTotalFiles that increment the totalBytes and totalFiles fields respectively. We have synchronized the methods using the synchronized keyword.
+* In some of the methods, we have used the this keyword as the monitor object. This is not a good practice because if we have multiple methods that are synchronized and they use the this keyword as the monitor object, they will share the same monitor object.
+* This means that if one thread is executing one of the synchronized methods, other threads will not be able to execute any of the synchronized methods. This can lead to performance issues and can cause deadlocks.
+* It is okay when we have some methoods, what if we have larger number of methods ?? We have to use some dedicated synchronization monitor object.
+*
+* public void incrementTotalFiles(){
+        synchronized (this){
+            totalFiles++;
+        }
+    }
+
+           ======
+
+* public synchronized void incrementTotalFiles(){
+            totalFiles++;
+    }
+
+  This is synchronizing the current object which will cause unnecessary weight. So better to use dedicated monitor (lock) object.
+
+* Both are same,
+*
+*
+* */
+
+```
+
+### The volatile keyword
+
+The `volatile` keyword in Java is used to indicate that a variable's value will be modified by different threads. It ensures that changes made by one thread to the variable are visible to other threads immediately, preventing visibility issues and ensuring data consistency.
+But not RACE conditions 
+
+![img_80.png](img_80.png)
+2 Threads read the value from memory and store it locally 
+
+![img_81.png](img_81.png)
+When thread1 changes the value, it will be stored in the local cache, not in the main memory. Even if update in the main memory, thread2 will not see the updated value. bcz it already has the value in the cache, this is the visibility problem,
+To solve this problem, without overhead of synchronization, we can use volatile keyword. VOLATILE means unstable, 
+SO we tell to JVM that this variable can be changed by multiple threads, so don't cache it, always read from the main memory.
+
+The `volatile` keyword in Java is used to indicate that a variable's value will be modified by different threads. It ensures that changes made by one thread to the variable are visible to other threads immediately, preventing visibility issues and ensuring data consistency.
+
+### Key Points:
+- **Visibility**: Changes to a `volatile` variable are always visible to other threads.
+- **No Caching**: The value of a `volatile` variable is always read from and written to the main memory, not from a thread's local cache.
+- **No Atomicity**: The `volatile` keyword does not guarantee atomicity of compound actions (e.g., increment operations).
+
+```java
+// DownloadStatus.java
+package concurrency;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class DownloadStatus {
+    private volatile boolean isDone;
+    private int totalBytes;
+    private int totalFiles;
+    private Object totalBytesLock = new Object();
+
+
+    public void incrementTotalBytes(){
+        synchronized (totalBytesLock){
+            totalBytes++;
+        }
+    }
+
+    public synchronized void incrementTotalFiles(){
+            totalFiles++;
+    }
+
+    public int getTotalBytes() {
+        return totalBytes;
+    }
+
+    public int getTotalFiles() {
+        return totalFiles;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void done() {
+        isDone = true;
+    }
+}
+
+
+/*
+*  public synchronized boolean isDone() {
+        return isDone;
+    }
+
+    public synchronized void done() {
+        isDone = true;
+    }
+    *
+    * TO fix temporary solution, we can use synchronized keyword to make sure that only one thread can access this method at a time
+    * but there is a better way
+    * use volatile keyword for boolean
+*
+* */
+
+
+// ThreadDemo.java
+package concurrency;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class ThreadDemo {
+    public static void show(){
+        var status = new DownloadStatus();
+
+        var thread1 = new Thread(new DownloadFileTask(status));
+        var thread2 = new Thread(() -> {
+            while(!status.isDone()) {}
+            System.out.println(status.getTotalBytes());
+        });
+        // when we run this we cannot run other thread, bcz loop keep running until finish, but there is a better way to do this
+
+        thread1.start();
+        thread2.start();
+
+    }
+}
+
+// DownloadFileTask.java
+package concurrency;
+
+public class DownloadFileTask implements Runnable{
+    private DownloadStatus status;
+
+    public DownloadFileTask(DownloadStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Downloading a file: " + Thread.currentThread().getName());
+
+        for (var i = 0; i < 1_000_000; i++){
+            if (Thread.currentThread().isInterrupted()) return;
+            status.incrementTotalBytes();
+        }
+
+        status.done();
+
+        System.out.println("Download complete: " + Thread.currentThread().getName());
+    }
+
+    public DownloadStatus getStatus() {
+        return status;
+    }
+}
+
+```
+
+
+### Example
+
+Here is an example demonstrating the use of the `volatile` keyword:
+
+```java
+public class VolatileExample {
+    private volatile boolean flag = false;
+
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public static void main(String[] args) {
+        VolatileExample example = new VolatileExample();
+
+        Thread writer = new Thread(() -> {
+            example.setFlag(true);
+            System.out.println("Flag set to true");
+        });
+
+        Thread reader = new Thread(() -> {
+            while (!example.isFlag()) {
+                // Busy-wait until flag is true
+            }
+            System.out.println("Flag is true");
+        });
+
+        writer.start();
+        reader.start();
+    }
+}
+```
+
+### Explanation
+- **`volatile boolean flag`**: The `flag` variable is declared as `volatile`, ensuring visibility across threads.
+- **Writer Thread**: Sets the `flag` to `true`.
+- **Reader Thread**: Continuously checks the `flag` until it becomes `true`.
+
+### Considerations:
+- **Performance**: Using `volatile` can introduce performance overhead due to the need to read from and write to the main memory.
+- **Use Cases**: Suitable for simple flags or state variables but not for complex synchronization needs.
