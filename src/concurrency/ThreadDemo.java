@@ -1,22 +1,29 @@
 package concurrency;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ThreadDemo {
     public static void show(){
-        var status = new DownloadStatus();
+        Collection<Integer> collection = Collections.synchronizedCollection(new ArrayList<>());
 
-        var thread1 = new Thread(new DownloadFileTask(status));
-        var thread2 = new Thread(() -> {
-            while(!status.isDone()) {}
-            System.out.println(status.getTotalBytes());
+        var thread1 = new Thread(() -> {
+            collection.addAll(Arrays.asList(1, 2, 3));
         });
-        // when we run this we cannot run other thread, bcz loop keep running until finish, but there is a better way to do this
+
+        var thread2 = new Thread(() -> {
+            collection.addAll(Arrays.asList(4, 5, 6));
+        });
 
         thread1.start();
         thread2.start();
 
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println(collection);
     }
 }
