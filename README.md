@@ -1388,8 +1388,9 @@ In contrast, Object-Oriented Programming (OOP) encapsulates data and behavior wi
 
 ### Encapsulation
 
+- Data Hiding & Protection
 - Bundle the data and methods that operate on the data into a single unit called a class.
-
+- integrating data (variables) and code (methods) into a single unit. In encapsulation, a class's variables are hidden from other classes and can only be accessed by the methods of the class in which they are found.
 ```java
 // Employee.java
 public class Emplyee {
@@ -1463,9 +1464,11 @@ public static void main(String[] args) {
 
 ### Abstraction
 
+- Hiding complexity & Showing Only essentials
 - Reduce complexity by hiding unnecessary details
 - Remote Controller example (we dont know how the transistors of remote working internally, we only know just changing the channel etc)
 - Hiding implementation details
+- hiding the implementation details of a code and exposing only the necessary information to the user. It provides the ability to simplify complex systems by ignoring irrelevant details and reducing complexity
 
 **Coupling** - the level of dependency between classes. If we change one class, it should not affect the other class.
 
@@ -8302,3 +8305,328 @@ map.remove(1);
 
 
 # The Executive Framework
+
+![img_84.png](img_84.png)
+
+The `Executor` framework in Java provides a high-level API for managing and controlling thread execution. It simplifies the creation and management of threads by providing a set of interfaces and classes for handling asynchronous task execution. We don't need to explicitly work with threads instead we focus on tasks and let Java take care of the thread manipulation.
+
+### Key Components:
+
+1. **Executor Interface**: The root interface for task execution. It has a single method `execute(Runnable command)` for executing tasks.
+
+2. **ExecutorService Interface**: Extends `Executor` and provides methods for managing the lifecycle of tasks and the executor itself. Key methods include:
+    - `submit()`: Submits a task for execution and returns a `Future` representing the task's result.
+    - `shutdown()`: Initiates an orderly shutdown of the executor.
+    - `shutdownNow()`: Attempts to stop all actively executing tasks and halts the processing of waiting tasks.
+    - `invokeAll()`, `invokeAny()`: Execute a collection of tasks.
+
+3. **ScheduledExecutorService Interface**: Extends `ExecutorService` and provides methods for scheduling tasks to run after a delay or periodically.
+
+4. **ThreadPoolExecutor Class**: A concrete implementation of `ExecutorService` that uses a pool of worker threads to execute tasks.
+
+5. **Executors Utility Class**: Provides factory methods for creating different types of executor services, such as:
+    - `newFixedThreadPool(int nThreads)`: Creates a thread pool with a fixed number of threads.
+    - `newCachedThreadPool()`: Creates a thread pool that creates new threads as needed but reuses previously constructed threads when available.
+    - `newSingleThreadExecutor()`: Creates an executor that uses a single worker thread.
+    - `newScheduledThreadPool(int corePoolSize)`: Creates a thread pool that can schedule commands to run after a given delay or periodically.
+
+### Example:
+
+Here is an example demonstrating the use of the `ExecutorService` to manage a pool of threads:
+
+```java
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class ExecutorFrameworkExample {
+    public static void main(String[] args) {
+        // Create a fixed thread pool with 3 threads
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        // Submit tasks for execution
+        for (int i = 0; i < 10; i++) {
+            executorService.submit(() -> {
+                String threadName = Thread.currentThread().getName();
+                System.out.println("Task executed by: " + threadName);
+            });
+        }
+
+        // Initiate an orderly shutdown
+        executorService.shutdown();
+
+        try {
+            // Wait for all tasks to complete
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
+    }
+}
+```
+
+### Explanation:
+- **ExecutorService**: Created using `Executors.newFixedThreadPool(3)`, which creates a thread pool with 3 threads.
+- **submit()**: Submits tasks for execution.
+- **shutdown()**: Initiates an orderly shutdown.
+- **awaitTermination()**: Waits for all tasks to complete or the timeout to expire.
+- **shutdownNow()**: Attempts to stop all actively executing tasks immediately.
+
+
+## Thread Pools
+
+Threads is the fundamental building block of the concurrent Application. But working directly with the threads have couple of problems.
+1. Availability
+   * We have limited no of threads available. If we are not careful, we may end up creating too many threads, which can lead to out of Memory exception. So our app will crash
+2. Cost
+   * Creating a thread is costly if we have 1000 tasks, and we have 10 threads available, we have to create 1000 threads like repeating the process of creating and destroying the threads, which is costly.
+
+So Java 5 came up with a solution called Thread Pools. It's a collection of threads that can be reused to execute tasks. It's a way to manage and reuse threads efficiently.
+![img_85.png](img_85.png)
+
+Worker thread is a thread that is created and managed by the thread pool. It's responsible for executing the tasks. When the work is done, it will be returned to the pool, so it can be reused to execute another task. Since threads have no of fixed threads, we don't have to creating too many threads.
+
+![img_86.png](img_86.png)
+If all threads are busy, the task will be added to the queue, and when the thread is available, it will be executed. So we will add the task to thread pool, and then thread pool will take care of the rest.
+
+
+## Executor Service
+
+In Java, the concept of thread pool represented using the executor service interface and its implementations. It's an interface that extends the executor interface and provides a more complete framework for managing asynchronous task execution.
+
+![img_87.png](img_87.png) 
+
+* `ThreadPoolExecutor` - is a typical implementation of ExecutorService interface. this the one we use most of the time.
+* `ScheduledThreadPoolExecutor` - we can schedule tasks to run after a delay or periodically. This allows us to schedule tasks to run at a specific time or after a specific interval.
+* `ForkJoinPool` - is a special type of thread pool that is optimized for parallel processing. It's used for divide-and-conquer algorithms where tasks are split into smaller subtasks and executed concurrently, and join them back together.
+
+Creating a `ThreadPool` instance directly using the `ThreadPoolExecutor` class is generally discouraged because it requires a deep understanding of the various parameters and their impact on the application's performance and behavior. Instead, it is recommended to use the `Executors` utility class, which provides factory methods to create different types of thread pools with sensible defaults.
+
+![img_88.png](img_88.png)
+
+### Reasons to Avoid Direct Creation:
+1. **Complexity**: Directly creating a `ThreadPoolExecutor` requires specifying parameters like core pool size, maximum pool size, keep-alive time, and work queue, which can be complex and error-prone.
+2. **Best Practices**: The `Executors` utility class encapsulates best practices and provides well-tested configurations for common use cases.
+3. **Readability**: Using `Executors` makes the code more readable and maintainable by clearly indicating the type of thread pool being created.
+
+Recommended is using Factory Method of `Executers` class.
+1. `newSingleThreadExecutor()` - creates a thread pool with a single worker thread.
+2. `newFixedThreadPool(int nThreads)` - creates a thread pool with a fixed number of threads. 
+
+These will be an instance of `ThreadPoolExecutor` class.
+
+1. `newScheduledThreadPool(int corePoolSize)` - creates a thread pool that can schedule commands to run after a given delay or periodically.
+
+It's an instance of `ScheduledThreadPoolExecutor` class.
+
+### Example of Using `Executors` Utility Class:
+```java
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class ThreadPoolExample {
+    public static void main(String[] args) {
+        // Create a fixed thread pool with 3 threads
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        // Submit tasks for execution
+        for (int i = 0; i < 10; i++) {
+            executorService.submit(() -> {
+                System.out.println("Task executed by: " + Thread.currentThread().getName());
+            });
+        }
+
+        // Shutdown the executor service
+        executorService.shutdown();
+    }
+}
+```
+
+### Example of Direct Creation (Not Recommended):
+```java
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class DirectThreadPoolExample {
+    public static void main(String[] args) {
+        // Directly create a ThreadPoolExecutor
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            3, // core pool size
+            5, // maximum pool size
+            60, // keep-alive time
+            TimeUnit.SECONDS, // time unit for keep-alive time
+            new LinkedBlockingQueue<>() // work queue
+        );
+
+        // Submit tasks for execution
+        for (int i = 0; i < 10; i++) {
+            executor.submit(() -> {
+                System.out.println("Task executed by: " + Thread.currentThread().getName());
+            });
+        }
+
+        // Shutdown the executor
+        executor.shutdown();
+    }
+}
+```
+
+Using the `Executors` utility class is preferred for simplicity, readability, and adherence to best practices.
+
+```java
+var executor = Executors.newFixedThreadPool(2);
+System.out.println(executor.getClass().getName()); // java.util.concurrent.ThreadPoolExecutor
+```
+
+```java
+var executor = Executors.newFixedThreadPool(2);
+executor.submit(() -> {
+    System.out.println(Thread.currentThread().getName());
+});
+// pool-1-thread-1
+// we dont have to create the thread, we just submit the task to the executor, and it will take care of the rest.
+```
+
+```java
+public static void show(){
+    var executor = Executors.newFixedThreadPool(2);
+    for (var i = 0; i < 10; i++)
+        executor.submit(() -> {
+            System.out.println(Thread.currentThread().getName());
+        });
+}
+
+// 2 threads allocated to the pool, and 10 tasks submitted to the pool, so 2 threads will execute the tasks concurrently.
+// Output
+/*
+pool-1-thread-2
+pool-1-thread-1
+pool-1-thread-2
+pool-1-thread-1
+pool-1-thread-2
+pool-1-thread-2
+pool-1-thread-1
+pool-1-thread-2
+pool-1-thread-1
+pool-1-thread-2
+ * */
+```
+
+* If you try to begin another program, it will be blocked until the previous program is finished. So we can use `shutdown()` method to shutdown the executor service.
+* what if we have a task that takes a long time to complete, and we want to cancel it, we can use `shutdownNow()` method to cancel the task.
+* Also what if the program crashes, and we cannot shut down the executor service, so try to use `try-catch` block to shut down the executor service.
+
+```java
+public static void show(){
+        var executor = Executors.newFixedThreadPool(2);
+
+        try {
+            executor.submit(() -> {
+                System.out.println(Thread.currentThread().getName());
+            });
+        }
+        finally {
+            executor.shutdown();
+        }
+
+    }
+```
+
+Executor service doesn't solve the concurrency problem, it just simplifies the management of threads. If we have shared resources, we still have to use synchronization or atomic types to make sure that the shared resources are accessed safely. It is just simplifies thread manipulation.
+
+## Callable and Futures
+
+Sometimes we need to return a value from, For example, We call twitter API to get the latest tweets, and we want to return the tweets to the user. In this case, we can use Callable and Future interfaces.
+
+* `Callable` - Represents a task that returns a result and may throw an exception.
+https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html
+![img_89.png](img_89.png)
+* Similar to Runnable, but it can return a value and throw an exception. It's a generic interface(v), so we have to specify the return type.
+```java
+ var executor = Executors.newFixedThreadPool(2);
+
+        try {
+            var future = executor.submit(() -> {
+                System.out.println(Thread.currentThread().getName());
+                return 1;
+                // This is callable, so it can return a value
+            });
+            
+        }
+        finally {
+            executor.shutdown();
+        }
+```
+
+![img_90.png](img_90.png)
+
+* Future class represents it will return a value in the future. 
+
+```java
+public static void show(){
+    var executor = Executors.newFixedThreadPool(2);
+
+    try {
+        var future = executor.submit(() -> {
+            LongTask.simulate();
+            return 1;
+        });
+
+        System.out.println("Do more work");
+        var result = future.get(); 
+        System.out.println(result);
+
+    } catch (ExecutionException | InterruptedException e) {
+        throw new RuntimeException(e);
+    } finally {
+        executor.shutdown();
+    }
+}
+```
+future has a many methods,
+* `get()` - Returns the result of the computation when it is available. This method blocks if the computation is not yet complete.
+* `isDone()` - Returns true if the computation is complete.
+* `cancel()` - Attempts to cancel the execution of the task.
+* `isCancelled()` - Returns true if the task was cancelled before it completed.
+
+## Asynchronous Programming
+
+```java
+public static void show(){
+    var executor = Executors.newFixedThreadPool(2);
+
+    try {
+        var future = executor.submit(() -> {
+            LongTask.simulate();
+            return 1;
+        });
+
+        System.out.println("Do more work");
+        var result = future.get(); // this get is blocking method, the current thread need to wait until the result come out.
+        System.out.println(result);
+
+    } catch (ExecutionException | InterruptedException e) {
+        throw new RuntimeException(e);
+    } finally {
+        executor.shutdown();
+    }
+}
+```
+
+`future.get()` - get is blocking method, the current thread need to wait until the result come out.
+We are not using current thread properly, we are wasting our thread, this is a very simple CL app.
+
+If we have mobile or web app , main thread will be responsible for UI events such as mouse clicks, key presses, and touch events. If we block the main thread, the app will become unresponsive/freeze, and the user experience will be poor.
+
+Then, we should write our code in non blocking way, called Asynchronous programming.
+
+`Asynchronous = non-blocking` 
+
+## Completable Future 
+
+![img_91.png](img_91.png)
+
+https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html
