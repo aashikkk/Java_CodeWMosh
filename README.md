@@ -52,7 +52,7 @@
        8. [Abstract Classes and Methods](#abstract-classes-and-methods)
        9. [Final Classes and Methods](#final-classes-and-methods)
        10. [Deep Inheritance Hierarchies](#deep-inheritance-hierarchies)
-       11. [Summary](#summary)
+       11. [Summary](#summary-of-inheritance)
     6. [Interfaces](#interfaces)
        1. [Creating Interfaces](#creating-interface)
        2. [Dependency Injection](#dependency-injection)
@@ -2589,7 +2589,7 @@ Diamond Problem
 
 That's why Java doesn't support multiple inheritance. Instead, it supports multiple interfaces.
 
-### Summary
+### Summary of inheritance
 
 - The `super` keyword is a reference to the base or parent class. We can
 use it to access the members (fields and methods) or call the
