@@ -1741,6 +1741,16 @@ parameters will be different
 
 **Static Methods** - Static methods are accessible via classes, not objects.
 
+### Method overriding and overloading
+
+| Feature             | Overloading                                      | Overriding                                          |
+|---------------------|--------------------------------------------------|-----------------------------------------------------|
+| Same class or subclass/superclass? | Same class                                   | Subclass and superclass                           |
+| Method signature (name and parameters) | Same name, different parameters               | Same name and parameters                          |
+| Purpose             | Different operations with the same method name   | Specific implementation of an inherited method     |
+| Polymorphism        | Compile-time                                     | Runtime                                             |
+
+
 
 #### Moving away from Static Members
 // MortgageCalc
