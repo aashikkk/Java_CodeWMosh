@@ -66,7 +66,7 @@
        7. [Private Methods in Interfaces](#private-methods)
        8. [Interface and Abstract Methods](#interfaces-and-abstract-methods)
        9. [When to use Interface](#when-to-use-interfaces)
-       10. [Summary in Interfaces](#summary-)
+       10. [Summary in Interfaces](#summary--)
 
 3. [Advanced Topics](#advanced-topics)
    1. [Exceptions](#exceptions)
@@ -3515,7 +3515,7 @@ Ex2: In Mortage Calculator, we dont have MortgageCalc Interface, bcz that's pret
 ![img_50.png](img_50.png) - 
 
 
-### Summary 
+### Summary  
 
 - We use interfaces to build loosely-coupled, extensible and testable
   applications.  
