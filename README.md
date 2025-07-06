@@ -2388,7 +2388,7 @@ public class Main {
   }
   ```
 
-### Summary
+### Summary 
 - **`instanceof`**: More flexible, allows comparison with subclasses.
 - **`getClass`**: Stricter, only allows comparison with the exact same class.
 
