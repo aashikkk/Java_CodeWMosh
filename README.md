@@ -5583,9 +5583,13 @@ public class MapDemo {
 ![img_64.png](img_64.png)
 
 Collection - The `Collection` interface is the root interface for all collection classes. It provides a way to iterate over the elements of a collection.
+
 List - The `List` interface extends `Collection` and represents an ordered collection of elements. It allows duplicate elements and provides methods to access elements by index.
+
 Queue - The `Queue` interface extends `Collection` and represents a collection of elements in a specific order. It provides methods for adding, removing, and inspecting elements. FIFO queues are common implementations of the `Queue` interface.
+
 Set - The `Set` interface extends `Collection` and represents a collection of unique elements. It does not allow duplicate elements.
+
 Map - The `Map` interface represents a collection of key-value pairs. It does not extend the `Collection` interface. It allows faster searching for elements based on a key.
 
 
@@ -6920,11 +6924,17 @@ public class PrimitiveStreamsDemo {
 ### Summary - Streams
 
 **Streams**—To process a collection of data in a declarative way
+
 **Mapping** - Transforming elements of a stream
+
 **Filtering** - Selecting elements based on a condition
+
 **Slicing** - Extracting a subset of elements
+
 **Sorting** - Arranging elements in a specific order
+
 **Reducing** - Combining elements into a single value
+
 **Collectors** - Collecting elements into a collection
 
 
